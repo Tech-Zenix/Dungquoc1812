@@ -571,7 +571,7 @@
     const productCode = makeProductCode(product);
     const randomCode = generateRandomCode(6);
     const code = productCode + '-' + randomCode;
-    const targetUrl = 'https://thanhtoandichvuzenixlab.netlify.app/?amount=' + encodeURIComponent(amount) + '&code=' + encodeURIComponent(code);
+    const targetUrl = 'https://tech-zenix.github.io/AutobankZenix/?amount=' + encodeURIComponent(amount) + '&code=' + encodeURIComponent(code);
 
     // Mở autobanking ở tab mới, giữ trang ZENIX LAB hiện tại ở tab đang mở.
     const paymentWindow = window.open(targetUrl, '_blank', 'noopener,noreferrer');
