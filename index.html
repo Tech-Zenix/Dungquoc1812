@@ -524,20 +524,25 @@
 
 <script>
 
-  const PRODUCT_CATALOG = {
-    locketgold15s: { name: 'Locket Gold 15s', package: 'Vĩnh viễn' },
-    canvapro: { name: 'Canva Pro', package: '1 Year' },
-    gemini5tb: { name: 'Genimi Pro + 5TB Google One', package: '18 Months' },
-    netflixuhd: { name: 'Netflix UHD Chính chủ', package: '1 Month' },
-    damefacebook: { name: 'Dame tài khoản Facebook', package: '1 acc' },
-    dameinstagram: { name: 'Dame tài khoản Instagram', package: '1 acc' },
-    dametiktok: { name: 'Dame tài khoản Tiktok', package: '1 acc' },
-    tutbaogiamgiashopee: { name: 'Tut Bào Giảm giá Shopee', package: '1 tut' },
-    tutruaip: { name: 'Tut Rửa I.P', package: '1 tut' },
-    tutmanguonblackmmo: { name: 'Tut Mã Nguồn - Black MMO', package: '1 tut' },
-    tooldamefacebook: { name: 'Tool Dame Facebook', package: '1 tool' },
-    unlockfacebook282: { name: 'Unlock acc Facebook 180 ngày', package: '1 acc' }
-  };
+const PRODUCT_CATALOG = {
+  locketgold15s: {
+    name: 'Locket Gold 15s',
+    amount: 40000,
+    package: 'Vĩnh viễn'
+  },
+
+  canvapro: {
+    name: 'Canva Pro',
+    amount: 40000,
+    package: '1 Year'
+  },
+
+  gemini5tb: {
+    name: 'Genimi Pro + 5TB Google One',
+    amount: 48888,
+    package: '18 Months'
+  }
+};
 
   let selectedProductId = null;
   let creatingPayment = false;
