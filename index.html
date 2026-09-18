@@ -406,7 +406,7 @@
             <p>Locket full chức năng, bảo hành đầy đủ.</p>
           </div>
         </div>
-        <div class="price-row"><div><span class="price">40.000đ/Vĩnh viễn</span><span class="old">70.000đ/Vĩnh viễn</span></div><button class="buy" onclick="buy('Locket Gold 15s','40.000đ','Vĩnh viễn')">🛒 Mua ngay</button></div>
+        <div class="price-row"><div><span class="price">40.000đ/Vĩnh viễn</span><span class="old">70.000đ/Vĩnh viễn</span></div><button class="buy" onclick="buy('locketgold15s')">🛒 Mua ngay</button></div>
         <div class="rating">★ 4.9 (1.1k)</div>
       </article>
 
@@ -424,7 +424,7 @@
             <p>Canva Pro đầy đủ tính năng thiết kế cao cấp.</p>
           </div>
         </div>
-        <div class="price-row"><div><span class="price">40.000đ/1 Year</span><span class="old">100.000đ/1 Year</span></div><button class="buy" onclick="buy('Canva Pro','40.000đ','1 Year')">🛒 Mua ngay</button></div>
+        <div class="price-row"><div><span class="price">40.000đ/1 Year</span><span class="old">100.000đ/1 Year</span></div><button class="buy" onclick="buy('canvapro')">🛒 Mua ngay</button></div>
         <div class="rating">★ 4.9 (982)</div>
       </article>
 
@@ -442,7 +442,7 @@
             <p>Gói 5TB và AI Gemini Pro</p>
           </div>
         </div>
-        <div class="price-row"><div><span class="price">48.888đ/18 Months</span><span class="old">273.000đ/12 Months</span></div><button class="buy" onclick="buy('Genimi Pro + Google One 5TB - 18 Months','48.888đ','18 Months')">🛒 Mua ngay</button></div>
+        <div class="price-row"><div><span class="price">48.888đ/18 Months</span><span class="old">273.000đ/12 Months</span></div><button class="buy" onclick="buy('gemini5tb')">🛒 Mua ngay</button></div>
         <div class="rating">★ 5.0 (132)</div>
       </article>
     </div>
@@ -523,106 +523,104 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const toastEl = document.getElementById('toast');
-  let toastTimer;
-  function toast(message){
-    toastEl.textContent = message;
-    toastEl.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=>toastEl.classList.remove('show'),2600);
-  }
-  function buy(name, amount, packageName){
-    document.getElementById('paymentProduct').textContent = name;
-    document.getElementById('paymentAmount').textContent = amount;
-    document.getElementById('paymentPackage').textContent = name + ' — ' + packageName;
+
+  const PRODUCT_CATALOG = {
+    locketgold15s: { name: 'Locket Gold 15s', package: 'Vĩnh viễn' },
+    canvapro: { name: 'Canva Pro', package: '1 Year' },
+    gemini5tb: { name: 'Genimi Pro + 5TB Google One', package: '18 Months' },
+    netflixuhd: { name: 'Netflix UHD Chính chủ', package: '1 Month' },
+    damefacebook: { name: 'Dame tài khoản Facebook', package: '1 acc' },
+    dameinstagram: { name: 'Dame tài khoản Instagram', package: '1 acc' },
+    dametiktok: { name: 'Dame tài khoản Tiktok', package: '1 acc' },
+    tutbaogiamgiashopee: { name: 'Tut Bào Giảm giá Shopee', package: '1 tut' },
+    tutruaip: { name: 'Tut Rửa I.P', package: '1 tut' },
+    tutmanguonblackmmo: { name: 'Tut Mã Nguồn - Black MMO', package: '1 tut' },
+    tooldamefacebook: { name: 'Tool Dame Facebook', package: '1 tool' },
+    unlockfacebook282: { name: 'Unlock acc Facebook 180 ngày', package: '1 acc' }
+  };
+
+  let selectedProductId = null;
+  let creatingPayment = false;
+
+  function buy(productId){
+    const product = PRODUCT_CATALOG[productId];
+    if(!product){
+      toast('Sản phẩm không hợp lệ.');
+      return;
+    }
+
+    selectedProductId = productId;
+    document.getElementById('paymentProduct').textContent = product.name;
+    document.getElementById('paymentAmount').textContent = 'Đang xác thực…';
+    document.getElementById('paymentPackage').textContent =
+      product.name + ' — ' + product.package;
+
     document.getElementById('paymentOverlay').classList.add('show');
     document.body.style.overflow = 'hidden';
   }
+
   function closePayment(event){
     if(event && event.target !== event.currentTarget) return;
+    if(creatingPayment) return;
     document.getElementById('paymentOverlay').classList.remove('show');
     document.body.style.overflow = '';
   }
+
   function closeProcessing(event){
     if(event && event.target !== event.currentTarget) return;
     document.getElementById('processingOverlay').classList.remove('show');
     document.body.style.overflow = '';
   }
-  function generateRandomCode(length = 6){
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
-    for(let i = 0; i < length; i++){
-      code += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return code;
-  }
 
-  function normalizeAmount(amount){
-    return String(amount || '').replace(/[^0-9]/g, '');
-  }
+  async function confirmPayment(){
+    if(!selectedProductId || creatingPayment) return;
 
-  function makeProductCode(name){
-    const map = {
-      'Locket Gold 15s': 'locketgold15s',
-      'Canva Pro': 'canvapro'
-    };
-    return map[name] || String(name || 'sanpham')
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase().replace(/[^a-z0-9]+/g, '');
-  }
+    creatingPayment = true;
+    const confirmBtn = document.querySelector('.payment-confirm');
 
-  function confirmPayment(){
-    const product = document.getElementById('paymentProduct').textContent.trim();
-    const amountText = document.getElementById('paymentAmount').textContent.trim();
-    const amount = normalizeAmount(amountText);
-
-    if(!product || !amount){
-      toast('Không thể xác định thông tin thanh toán.');
-      return;
+    if(confirmBtn){
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Đang tạo đơn…';
     }
 
-    // Mã gồm mã sản phẩm + chuỗi ngẫu nhiên để vừa nhận diện gói vừa tránh trùng mã.
-    const productCode = makeProductCode(product);
-    const randomCode = generateRandomCode(6);
-    const code = productCode + '-' + randomCode;
-    const targetUrl = 'http://autobank-zenix.vercel.app/?amount=' + encodeURIComponent(amount) + '&code=' + encodeURIComponent(code);
+    try{
+      const response = await fetch('/api/payment/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product: selectedProductId })
+      });
 
-    // Mở autobanking ở tab mới, giữ trang ZENIX LAB hiện tại ở tab đang mở.
-    const paymentWindow = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      const data = await response.json().catch(() => ({}));
 
-    // Đóng popup xác nhận và hiển thị popup xử lý ngay trên tab ZENIX LAB hiện tại.
-    document.getElementById('paymentOverlay').classList.remove('show');
-    document.getElementById('processingOverlay').classList.add('show');
-    document.body.style.overflow = 'hidden';
+      if(!response.ok || !data.success || !data.payment_id){
+        throw new Error(data.error || 'Không thể tạo đơn thanh toán.');
+      }
 
-    // Nếu trình duyệt chặn popup/tab mới, báo cho người dùng nhưng vẫn giữ popup xử lý.
-    if(!paymentWindow){
-      toast('Trình duyệt đã chặn tab mới. Hãy cho phép cửa sổ bật lên để tiếp tục.');
+      // Chỉ truyền payment_id. Số tiền và mã chuyển khoản do backend quyết định.
+      window.location.href =
+        '/?payment_id=' + encodeURIComponent(data.payment_id);
+    }catch(error){
+      console.error('CREATE PAYMENT ERROR:', error);
+      toast(error.message || 'Không thể tạo đơn thanh toán.');
+    }finally{
+      creatingPayment = false;
+      if(confirmBtn){
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Xác nhận';
+      }
     }
   }
-  function contact(){ toast('Khu vực chat hỗ trợ đã sẵn sàng. Hãy kết nối với kênh hỗ trợ của bạn.'); }
 
-  document.getElementById('searchForm').addEventListener('submit', e=>{
-    e.preventDefault();
-    const q = document.getElementById('searchInput').value.trim().toLowerCase();
-    const cards = [...document.querySelectorAll('.product')];
-    if(!q){ cards.forEach(c=>c.style.display=''); toast('Nhập tên sản phẩm để tìm kiếm.'); return; }
-    let count=0;
-    cards.forEach(c=>{
-      const match = c.dataset.search.includes(q);
-      c.style.display = match ? '' : 'none';
-      if(match) count++;
-    });
-    document.getElementById('products').scrollIntoView({behavior:'smooth'});
-    toast(count ? `Tìm thấy ${count} sản phẩm phù hợp.` : 'Không tìm thấy sản phẩm phù hợp.');
-  });
+  function toast(message){
+    const el = document.getElementById('toast');
+    if(!el) return;
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer =
+      setTimeout(() => el.classList.remove('show'), 2500);
+  }
 
-  const menuBtn = document.getElementById('menuBtn');
-  const mobileNav = document.getElementById('mobileNav');
-  menuBtn.addEventListener('click',()=> {
-    mobileNav.style.display = mobileNav.style.display === 'none' ? 'block' : 'none';
-  });
-  mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>mobileNav.style.display='none'));
 </script>
 </body>
 </html>
