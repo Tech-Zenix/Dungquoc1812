@@ -1,1091 +1,133 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080808">
-  <title>Zenix Lab Product</title>
-  <link rel="icon" type="image/png" href="img.png">
-  <style>
-    :root{
-      --bg:#080808;
-      --panel:#141414;
-      --panel2:#1a1a1a;
-      --line:#2a2a2a;
-      --red:#ff2525;
-      --text:#f5f5f5;
-      --muted:#a6a6ad;
-      --max:1380px;
-      --radius:18px;
-    }
-
-    *{box-sizing:border-box;margin:0;padding:0}
-
-    body{
-      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-      background:
-        radial-gradient(circle at 75% 10%,rgba(255,25,25,.08),transparent 28%),
-        radial-gradient(circle at 15% 30%,rgba(255,0,0,.045),transparent 25%),
-        var(--bg);
-      color:var(--text);
-      min-height:100vh;
-      line-height:1.5;
-    }
-
-    .page{
-      width:min(calc(100% - 40px),var(--max));
-      margin:0 auto;
-      padding:18px 0 42px;
-    }
-
-    .page-title{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      margin-bottom:34px;
-    }
-
-    .page-title h1{
-      font-size:34px;
-      line-height:1.1;
-      font-weight:900;
-      letter-spacing:-1px;
-    }
-
-    .home-btn{
-      display:inline-flex;
-      align-items:center;
-      gap:7px;
-      margin-left:auto;
-      padding:9px 14px;
-      border:1px solid #5d1717;
-      border-radius:10px;
-      background:#151010;
-      color:#ff4a4a;
-      font-size:12px;
-      font-weight:800;
-      transition:.2s;
-      white-space:nowrap;
-    }
-    .home-btn:hover{
-      background:#241010;
-      border-color:#ff3030;
-      transform:translateY(-1px);
-    }
-
-    .result-count{
-      display:inline-flex;
-      align-items:center;
-      padding:7px 14px;
-      border-radius:12px;
-      background:#292929;
-      color:#aaa;
-      font-size:18px;
-      font-weight:800;
-    }
-
-    .products{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
-
-    .product{
-      border:1px solid #282020;border-radius:10px;background:#101010;padding:12px;
-      transition:.2s;min-width:0;
-    }
-
-    .product:hover{border-color:#6e1c1c;transform:translateY(-2px)}
-    .product-top{display:flex;gap:10px}
-
-    .product-image{
-      width:57px;height:57px;flex:0 0 57px;border-radius:10px;
-      display:grid;place-items:center;background:#171717;border:1px solid #333;
-      box-shadow:inset 0 0 15px rgba(255,0,0,.08);overflow:hidden;
-    }
-
-    .product-image img{width:100%;height:100%;object-fit:cover;display:block;border-radius:10px}
-
-    .product-top > div:last-child{min-width:0}
-    .tag{color:#aaa;font-size:11px;font-weight:700}
-    .product h2{font-size:12px;line-height:1.3;margin:2px 0 3px;font-weight:850}
-    .product-desc{color:#888;font-size:10px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-    .price-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:11px}
-    .price{color:var(--red);font-size:14px;font-weight:900}
-    .old{color:#777;text-decoration:line-through;font-size:9px;margin-left:5px}
-
-    .buy{
-      width:38px;height:38px;border:1px solid var(--red);border-radius:10px;background:transparent;
-      color:var(--red);cursor:pointer;font-size:17px;transition:.2s;flex:0 0 38px;
-    }
-    .buy:hover{background:rgba(255,37,37,.1);box-shadow:0 0 18px rgba(255,37,37,.18)}
-
-    .rating-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;font-size:11px}
-    .rating{color:#ffd21a;font-weight:800}
-    .stock{color:#888}
-
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:24px;
-      transform:translate(-50%,20px);
-      opacity:0;
-      pointer-events:none;
-      background:#171717;
-      border:1px solid #5b1717;
-      color:#fff;
-      padding:12px 18px;
-      border-radius:12px;
-      box-shadow:0 10px 30px rgba(0,0,0,.35);
-      transition:.25s;
-      z-index:20;
-    }
-
-    .toast.show{
-      opacity:1;
-      transform:translate(-50%,0);
-    }
-
-    @media(max-width:760px){
-      .page{
-        width:min(calc(100% - 24px),var(--max));
-        padding-top:16px;
-      }
-
-      .page-title{
-        gap:9px;
-        margin-bottom:22px;
-        flex-wrap:wrap;
-      }
-
-      .page-title h1{
-        font-size:28px;
-      }
-
-      .result-count{
-        font-size:15px;
-        padding:6px 10px;
-      }
-
-      .products{grid-template-columns:1fr;}
-      .page-title h1{font-size:28px;}
-    }
-
-    /* Payment popup */
-    .payment-overlay{
-      position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;
-      padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(5px);
-    }
-    .payment-overlay.show{display:flex}
-    .payment-modal{
-      width:min(430px,100%);background:#111;border:1px solid #6f1b1b;border-radius:16px;
-      box-shadow:0 25px 80px rgba(0,0,0,.65),0 0 35px rgba(255,0,0,.10);overflow:hidden;
-      animation:paymentPop .18s ease-out;
-    }
-    @keyframes paymentPop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
-    .payment-head{
-      display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px 20px;
-      border-bottom:1px solid #2d1515;background:linear-gradient(135deg,#1a0d0d,#111);
-    }
-    .payment-head h2{font-size:19px;font-weight:850}
-    .payment-close{
-      width:32px;height:32px;border:1px solid #4d2222;border-radius:9px;background:#171717;
-      color:#aaa;cursor:pointer;font-size:20px;line-height:1;
-    }
-    .payment-close:hover{color:#fff;border-color:#ff3030}
-    .payment-body{padding:20px}
-    .payment-product{
-      padding:13px 14px;margin-bottom:15px;border:1px solid #2b2020;border-radius:11px;background:#171717;
-    }
-    .payment-product small{display:block;color:#888;font-size:11px;margin-bottom:3px}
-    .payment-product strong{font-size:15px}
-    .payment-info{display:grid;gap:10px}
-    .payment-row{
-      display:flex;align-items:center;justify-content:space-between;gap:15px;
-      padding:11px 0;border-bottom:1px solid #241919;
-    }
-    .payment-row:last-child{border-bottom:0}
-    .payment-row span{color:#999;font-size:13px}
-    .payment-row strong{font-size:14px;text-align:right}
-    .payment-amount{color:#ff3030!important;font-size:19px!important}
-    .payment-note{margin-top:14px;color:#777;font-size:11px;line-height:1.5}
-    .payment-actions{display:flex;gap:10px;margin-top:18px}
-    .payment-actions button{flex:1;padding:11px 14px;border-radius:10px;font-weight:800;cursor:pointer}
-    .payment-cancel{border:1px solid #383838;background:#191919;color:#ccc}
-    .payment-confirm{border:1px solid #ff2929;background:linear-gradient(135deg,#ff3737,#e91c1c);color:#fff}
-    .payment-cancel:hover{background:#222}
-    .payment-confirm:hover{filter:brightness(1.08)}
-
-    /* Processing popup */
-    .processing-modal{width:min(430px,100%);background:#111;border:1px solid #6f1b1b;border-radius:16px;box-shadow:0 25px 80px rgba(0,0,0,.65),0 0 35px rgba(255,0,0,.10);overflow:hidden;animation:paymentPop .18s ease-out}
-    .processing-body{padding:24px 20px 22px;text-align:center}
-    .processing-icon{width:58px;height:58px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;background:#2b0b0b;border:1px solid #7a2020;color:#ff3333;font-size:27px;box-shadow:0 0 25px rgba(255,0,0,.12)}
-    .processing-body h2{font-size:20px;font-weight:850;margin-bottom:9px}
-    .processing-body p{color:#999;font-size:13px;line-height:1.55;margin:0 auto 18px;max-width:340px}
-    .admin-title{font-size:12px;color:#777;margin-bottom:9px}
-    .admin-links{display:grid;gap:9px}
-    .admin-link{display:flex;align-items:center;gap:11px;width:100%;padding:11px 13px;border:1px solid #302020;border-radius:11px;background:#171717;color:#fff;text-align:left;transition:.2s}
-    .admin-link:hover{border-color:#7a2020;background:#1c1111;transform:translateY(-1px)}
-    .admin-icon{width:34px;height:34px;flex:0 0 34px;border-radius:9px;display:grid;place-items:center;background:#2a0b0b;color:#ff3030;font-weight:900;font-size:19px}
-    .admin-link strong{font-size:13px}
-    .admin-link small{display:block;color:#777;font-size:10px;margin-top:1px}
-    .admin-arrow{margin-left:auto;color:#ff3030;font-size:17px}
-    .processing-close-row{margin-top:16px}
-    .processing-close-row button{width:100%;padding:10px 14px;border-radius:10px;border:1px solid #383838;background:#191919;color:#ccc;font-weight:800;cursor:pointer}
-    .processing-close-row button:hover{background:#222;color:#fff}
-
-    @media(max-width:440px){
-      .payment-modal{border-radius:14px}
-      .payment-head{padding:16px}
-      .payment-body{padding:16px}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<title>Zenix Lab Product</title>
+<link rel="icon" type="image/png" href="img.png">
+<style>
+:root{--bg:#080808;--panel:#141414;--panel2:#1a1a1a;--line:#2a2a2a;--red:#ff2525;--text:#f5f5f5;--muted:#a6a6ad;--max:1380px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(circle at 75% 10%,rgba(255,25,25,.08),transparent 28%),radial-gradient(circle at 15% 30%,rgba(255,0,0,.045),transparent 25%),var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+.page{width:min(calc(100% - 40px),var(--max));margin:0 auto;padding:18px 0 42px}
+.page-title{display:flex;align-items:center;gap:14px;margin-bottom:34px}.page-title h1{font-size:34px;line-height:1.1;font-weight:900;letter-spacing:-1px}
+.home-btn{display:inline-flex;align-items:center;gap:7px;margin-left:auto;padding:9px 14px;border:1px solid #5d1717;border-radius:10px;background:#151010;color:#ff4a4a;font-size:12px;font-weight:800;transition:.2s;white-space:nowrap;text-decoration:none}.home-btn:hover{background:#241010;border-color:#ff3030;transform:translateY(-1px)}
+.result-count{display:inline-flex;align-items:center;padding:7px 14px;border-radius:12px;background:#292929;color:#aaa;font-size:18px;font-weight:800}
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.product{border:1px solid #282020;border-radius:10px;background:#101010;padding:12px;transition:.2s;min-width:0}.product:hover{border-color:#6e1c1c;transform:translateY(-2px)}.product-top{display:flex;gap:10px}.product-image{width:57px;height:57px;flex:0 0 57px;border-radius:10px;display:grid;place-items:center;background:#171717;border:1px solid #333;box-shadow:inset 0 0 15px rgba(255,0,0,.08);overflow:hidden}.product-image img{width:100%;height:100%;object-fit:cover;display:block;border-radius:10px}.product-top>div:last-child{min-width:0}.tag{color:#aaa;font-size:11px;font-weight:700}.product h2{font-size:12px;line-height:1.3;margin:2px 0 3px;font-weight:850}.product-desc{color:#888;font-size:10px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.price-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:11px}.price{color:var(--red);font-size:14px;font-weight:900}.old{color:#777;text-decoration:line-through;font-size:9px;margin-left:5px}.buy{width:38px;height:38px;border:1px solid var(--red);border-radius:10px;background:transparent;color:var(--red);cursor:pointer;font-size:17px;transition:.2s;flex:0 0 38px}.buy:hover{background:rgba(255,37,37,.1);box-shadow:0 0 18px rgba(255,37,37,.18)}.buy:disabled{opacity:.5;cursor:wait}.rating-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;font-size:11px}.rating{color:#ffd21a;font-weight:800}.stock{color:#888}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#171717;border:1px solid #5b1717;color:#fff;padding:12px 18px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:.25s;z-index:2000}.toast.show{opacity:1;transform:translate(-50%,0)}
+.payment-overlay{position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(5px)}.payment-overlay.show{display:flex}.payment-modal{width:min(430px,100%);background:#111;border:1px solid #6f1b1b;border-radius:16px;box-shadow:0 25px 80px rgba(0,0,0,.65),0 0 35px rgba(255,0,0,.10);overflow:hidden;animation:paymentPop .18s ease-out}@keyframes paymentPop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}.payment-head{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px 20px;border-bottom:1px solid #2d1515;background:linear-gradient(135deg,#1a0d0d,#111)}.payment-head h2{font-size:19px;font-weight:850}.payment-close{width:32px;height:32px;border:1px solid #4d2222;border-radius:9px;background:#171717;color:#aaa;cursor:pointer;font-size:20px;line-height:1}.payment-close:hover{color:#fff;border-color:#ff3030}.payment-body{padding:20px}.payment-product{padding:13px 14px;margin-bottom:15px;border:1px solid #2b2020;border-radius:11px;background:#171717}.payment-product small{display:block;color:#888;font-size:11px;margin-bottom:3px}.payment-product strong{font-size:15px}.payment-info{display:grid;gap:10px}.payment-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:11px 0;border-bottom:1px solid #241919}.payment-row:last-child{border-bottom:0}.payment-row span{color:#999;font-size:13px}.payment-row strong{font-size:14px;text-align:right}.payment-amount{color:#ff3030!important;font-size:19px!important}.payment-note{margin-top:14px;color:#777;font-size:11px;line-height:1.5}.payment-actions{display:flex;gap:10px;margin-top:18px}.payment-actions button{flex:1;padding:11px 14px;border-radius:10px;font-weight:800;cursor:pointer}.payment-cancel{border:1px solid #383838;background:#191919;color:#ccc}.payment-confirm{border:1px solid #ff2929;background:linear-gradient(135deg,#ff3737,#e91c1c);color:#fff}.payment-confirm:disabled{opacity:.6;cursor:wait}
+@media(max-width:760px){.page{width:min(calc(100% - 24px),var(--max));padding-top:16px}.page-title{gap:9px;margin-bottom:22px;flex-wrap:wrap}.page-title h1{font-size:28px}.result-count{font-size:15px;padding:6px 10px}.products{grid-template-columns:1fr}}
+@media(max-width:440px){.payment-modal{border-radius:14px}.payment-head{padding:16px}.payment-body{padding:16px}}
+</style>
 </head>
-
 <body>
-  <main class="page">
-    <div class="page-title">
-      <h1>Tất cả sản phẩm</h1>
-      <span class="result-count">Kết quả tìm thấy</span>
-      <a class="home-btn" href="index.html" aria-label="Quay về trang chủ">🏠 Trang chủ</a>
-    </div>
+<main class="page">
+<div class="page-title"><h1>Tất cả sản phẩm</h1><span class="result-count">Kết quả tìm thấy</span><a class="home-btn" href="index.html">🏠 Trang chủ</a></div>
+<section class="products" aria-label="Tất cả sản phẩm">
+<!-- Products -->
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkwXtsvWEAwWrpOcUI4FHS4ouCrpCZhPHHLe8icVeDQBmfD-a-32VdGjY&s=10" alt="Locket Gold 15s"></div><div><span class="tag">Ứng dụng</span><h2>Locket Gold 15s</h2><p class="product-desc">Locket full chức năng, bảo hành đầy đủ.</p></div></div><div class="price-row"><div><span class="price">40.000đ/Vĩnh viễn</span><span class="old">85.000đ/Vĩnh viễn</span></div><button class="buy" onclick="buy('locketgold15s')">🛍</button></div><div class="rating-row"><span class="rating">★ 4.9 (1.1k)</span><span class="stock">Còn hàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://static.freepnglogo.com/images/all_img/1691829322canva-app-logo-png.png" alt="Canva Pro"></div><div><span class="tag">Phần mềm</span><h2>Canva Pro</h2><p class="product-desc">Canva Pro đầy đủ tính năng thiết kế cao cấp.</p></div></div><div class="price-row"><div><span class="price">40.000đ/1 Year</span><span class="old">150.000đ/1 Year</span></div><button class="buy" onclick="buy('canvapro')">🛍</button></div><div class="rating-row"><span class="rating">★ 4.9 (982)</span><span class="stock">Còn hàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Google_Gemini_icon_2025.svg/500px-Google_Gemini_icon_2025.svg.png?utm_source=vi.wikipedia.org&utm_campaign=index&utm_content=thumbnail" alt="Gemini"></div><div><span class="tag">Ứng dụng</span><h2>Gemini Pro + 5TB Google One</h2><p class="product-desc">Gói 5TB và AI Gemini Pro</p></div></div><div class="price-row"><div><span class="price">48.888đ/18 Months</span><span class="old">273.000đ/12 Months</span></div><button class="buy" onclick="buy('gemini5tb')">🛍</button></div><div class="rating-row"><span class="rating">★ 5.0 (132)</span><span class="stock">Còn hàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThW3vszDScLtuavCM31FfcECi3KJ9-wo2HqnX1wB0ewQ&s" alt="Netflix"></div><div><span class="tag">Sản Phẩm</span><h2>Netflix UHD Chính chủ</h2><p class="product-desc">Kích hoạt gói Netflix Ultra HD</p></div></div><div class="price-row"><div><span class="price">35.000đ/1 Month</span><span class="old">80.000đ/1 Month</span></div><button class="buy" onclick="buy('netflixuhd')">🛍</button></div><div class="rating-row"><span class="rating">★ 5.0 (102)</span><span class="stock">Luôn sẵn sàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://t4.ftcdn.net/jpg/04/61/11/23/360_F_461112337_QNqFwFApma7eVSf80EWrsTvdionTigwd.jpg" alt="Facebook"></div><div><span class="tag">Dịch vụ - Black</span><h2>Dame tài khoản Facebook</h2><p class="product-desc">Làm Die tài khoản facebook người khác</p></div></div><div class="price-row"><div><span class="price">150.000đ(Tùy acc)/1 acc</span><span class="old">500.000đ/1 acc</span></div><button class="buy" onclick="buy('damefacebook')">🛍</button></div><div class="rating-row"><span class="rating">★ 5.0 (422)</span><span class="stock">Luôn sẵn sàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://compote.slate.com/images/36309ea2-a704-4dcb-b79c-5991d7d309ab.jpeg?crop=1560%2C1040%2Cx0%2Cy0" alt="Instagram"></div><div><span class="tag">Dịch vụ - Black</span><h2>Dame tài khoản Instagram</h2><p class="product-desc">Làm Die tài khoản instagram người khác</p></div></div><div class="price-row"><div><span class="price">75.000đ(Tùy acc)/1 acc</span><span class="old">150.000đ/1 acc</span></div><button class="buy" onclick="buy('dameinstagram')">🛍</button></div><div class="rating-row"><span class="rating">★ 5.0 (762)</span><span class="stock">Luôn sẵn sàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ04f3Fg4YC_cDCkBMPjB1-hmHgZ81B9ac8VvdYLJucLHSamZJDRrf24_rI&s=10" alt="Tiktok"></div><div><span class="tag">Dịch vụ - Black</span><h2>Dame tài khoản Tiktok</h2><p class="product-desc">Làm Die tài khoản tiktok người khác</p></div></div><div class="price-row"><div><span class="price">100.000đ ~ 300.000đ(Tùy acc)/1 acc</span><span class="old">500.000đ/1 acc</span></div><button class="buy" onclick="buy('dametiktok')">🛍</button></div><div class="rating-row"><span class="rating">★ 5.0 (198)</span><span class="stock">Luôn sẵn sàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO6mQ4kh8Ms7cBHu9ViJWVSBGpAinimxpxZMkVW6FnlFCvcS7-pWAU-ts2&s=10" alt="Shopee"></div><div><span class="tag">Tut Trick</span><h2>Tut Bào Giảm giá Shopee</h2><p class="product-desc">Sử dụng mã giảm giá 100k nhiều lần</p></div></div><div class="price-row"><div><span class="price">50.000/1 tut</span><span class="old">100.000/1 tut</span></div><button class="buy" onclick="buy('tutbaogiamgiashopee')">🛍</button></div><div class="rating-row"><span class="rating">★ 4.9 (318)</span><span class="stock">Còn Hàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://img.magnific.com/vector-cao-cap/bieu-tuong-vector-dia-chi-ip-co-the-duoc-su-dung-cho-bo-bieu-tuong-luu-tru-web_717774-87995.jpg?semt=ais_test_b&w=740&q=80" alt="IP"></div><div><span class="tag">Tut Trick</span><h2>Tut Rửa I.P</h2><p class="product-desc">Rửa I.P bẩn, hạn chế checkpoint,...</p></div></div><div class="price-row"><div><span class="price">35.000/1 tut</span><span class="old">60.000/1 tut</span></div><button class="buy" onclick="buy('tutruaip')">🛍</button></div><div class="rating-row"><span class="rating">★ 4.4 (38)</span><span class="stock">Còn Hàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT30iHRsEA9unkqE9v1RrdbXXaj-oZRXK5-rWQ5LOojMAUG1mY8cOnO7_RW&s=10" alt="Mã nguồn"></div><div><span class="tag">Tut Trick - Black MMO</span><h2>Tut Mã Nguồn - Black MMO</h2><p class="product-desc">Kiếm 150k/1 ngày</p></div></div><div class="price-row"><div><span class="price">2.000.000đ/1 tut</span><span class="old">5.000.000/1 tut</span></div><button class="buy" onclick="buy('tutmanguonblackmmo')">🛍</button></div><div class="rating-row"><span class="rating">★ 5.0 (1)</span><span class="stock">Còn Hàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXsVAavRduQeoqjXJGBb5Q3s8MgDnwndUYEK4e7-5SkGf7U-xNMD228cQ&s=10" alt="Tool Facebook"></div><div><span class="tag">Tools</span><h2>Tool Dame Facebook</h2><p class="product-desc">Tool Dame Facebook full chức năng</p></div></div><div class="price-row"><div><span class="price">100.000/1 tool</span><span class="old">300.000/1 tool</span></div><button class="buy" onclick="buy('tooldamefacebook')">🛍</button></div><div class="rating-row"><span class="rating">★ 5.0 (94)</span><span class="stock">Còn Hàng</span></div></article>
+<article class="product"><div class="product-top"><div class="product-image"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWXqLMu9ulFyuxcSCCSFJgrYXaGwu3ROgxkq1YFxEUrQ&s" alt="Unlock Facebook"></div><div><span class="tag">Service</span><h2>Unlock acc Facebook 180 ngày</h2><p class="product-desc">Mở khóa acc facebook dưới dạng 282(đình chỉ, vô hiệu hóa,...)</p></div></div><div class="price-row"><div><span class="price">150.000/1</span><span class="old">300.000/1</span></div><button class="buy" onclick="buy('unlockfacebook282')">🛍</button></div><div class="rating-row"><span class="rating">★ 5.0 (94)</span><span class="stock">Còn Hàng</span></div></article>
+</section>
+</main>
 
-    <section class="products" aria-label="Tất cả sản phẩm">
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkwXtsvWEAwWrpOcUI4FHS4ouCrpCZhPHHLe8icVeDQBmfD-a-32VdGjY&s=10" alt="Locket Gold 15s">
-          </div>
-          <div>
-            <span class="tag">Ứng dụng</span>
-            <h2>Locket Gold 15s</h2>
-            <p class="product-desc">Locket full chức năng, bảo hành đầy đủ.</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">40.000đ/Vĩnh viễn</span><span class="old">85.000đ/Vĩnh viễn</span></div>
-          <button class="buy" onclick="buy('locketgold15s')" aria-label="Mua Locket Gold 15s">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 4.9 (1.1k)</span><span class="stock">Còn hàng</span></div>
-      </article>
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://static.freepnglogo.com/images/all_img/1691829322canva-app-logo-png.png" alt="Canva Pro">
-          </div>
-          <div>
-            <span class="tag">Phần mềm</span>
-            <h2>Canva Pro</h2>
-            <p class="product-desc">Canva Pro đầy đủ tính năng thiết kế cao cấp.</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">40.000đ/1 Year</span><span class="old">150.000đ/1 Year</span></div>
-          <button class="buy" onclick="buy('canvapro')" aria-label="Mua Canva Pro">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 4.9 (982)</span><span class="stock">Còn hàng</span></div>
-      </article>
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Google_Gemini_icon_2025.svg/500px-Google_Gemini_icon_2025.svg.png?utm_source=vi.wikipedia.org&utm_campaign=index&utm_content=thumbnail">
-          </div>
-          <div>
-            <span class="tag">Ứng dụng</span>
-            <h2>Gemini Pro + 5TB Google One</h2>
-            <p class="product-desc">Gói 5TB và AI Gemini Pro</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">48.888đ/18 Months</span><span class="old">273.000đ/12 Months</span></div>
-          <button class="buy" onclick="buy('gemini5tb')" aria-label="Mua Gemini Pro + 5TB Google One">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 5.0 (132)</span><span class="stock">Còn hàng</span></div>
-      </article>
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThW3vszDScLtuavCM31FfcECi3KJ9-wo2HqnX1wB0ewQ&s">
-          </div>
-          <div>
-            <span class="tag">Sản Phẩm </span>
-            <h2>Netflix UHD Chính chủ</h2>
-            <p class="product-desc">Kích hoạt gói Netflix Ultra HD</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">35.000đ/1 Month</span><span class="old">80.000đ/1 Month</span></div>
-          <button class="buy" onclick="buy('netflixuhd')" aria-label="Kích hoạt gói Netflix Ultra HD">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 5.0 (102)</span><span class="stock">Luôn sẵn sàng</span></div>
-      </article>
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://t4.ftcdn.net/jpg/04/61/11/23/360_F_461112337_QNqFwFApma7eVSf80EWrsTvdionTigwd.jpg">
-          </div>
-          <div>
-            <span class="tag">Dịch vụ - Black</span>
-            <h2>Dame tài khoản Facebook</h2>
-            <p class="product-desc">Làm Die tài khoản facebook người khác</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">150.000đ(Tùy acc)/1 acc</span><span class="old">500.000đ/1 acc</span></div>
-          <button class="buy" onclick="buy('damefacebook')" aria-label="Làm Die tài khoản facebook người khác">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 5.0 (422)</span><span class="stock">Luôn sẵn sàng</span></div>
-      </article>
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://compote.slate.com/images/36309ea2-a704-4dcb-b79c-5991d7d309ab.jpeg?crop=1560%2C1040%2Cx0%2Cy0">
-          </div>
-          <div>
-            <span class="tag">Dịch vụ - Black</span>
-            <h2>Dame tài khoản Instagram</h2>
-            <p class="product-desc">Làm Die tài khoản instagram người khác</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">75.000đ(Tùy acc)/1 acc</span><span class="old">150.000đ/1 acc</span></div>
-          <button class="buy" onclick="buy('dameinstagram')" aria-label="Làm Die tài khoản instagram người khác">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 5.0 (762)</span><span class="stock">Luôn sẵn sàng</span></div>
-      </article>
-
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ04f3Fg4YC_cDCkBMPjB1-hmHgZ81B9ac8VvdYLJucLHSamZJDRrf24_rI&s=10">
-          </div>
-          <div>
-            <span class="tag">Dịch vụ - Black</span>
-            <h2>Dame tài khoản Tiktok</h2>
-            <p class="product-desc">Làm Die tài khoản tiktok người khác</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">100.000đ ~ 300.000đ(Tùy acc)/1 acc</span><span class="old">500.000đ/1 acc</span></div>
-          <button class="buy" onclick="buy('dametiktok')" aria-label="Làm Die tài khoản tiktok người khác">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 5.0 (198)</span><span class="stock">Luôn sẵn sàng</span></div>
-      </article>
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO6mQ4kh8Ms7cBHu9ViJWVSBGpAinimxpxZMkVW6FnlFCvcS7-pWAU-ts2&s=10">
-          </div>
-          <div>
-            <span class="tag">Tut Trick</span>
-            <h2>Tut Bào Giảm giá Shopee</h2>
-            <p class="product-desc">Sử dụng mã giảm giá 100k nhiều lần</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">50.000/1 tut</span><span class="old">100.000/1 tut</span></div>
-          <button class="buy" onclick="buy('tutbaogiamgiashopee')" aria-label="Sử dụng mã giảm giá 100k nhiều lần">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 4.9 (318)</span><span class="stock">Còn Hàng</span></div>
-      </article>
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://img.magnific.com/vector-cao-cap/bieu-tuong-vector-dia-chi-ip-co-the-duoc-su-dung-cho-bo-bieu-tuong-luu-tru-web_717774-87995.jpg?semt=ais_test_b&w=740&q=80">
-          </div>
-          <div>
-            <span class="tag">Tut Trick</span>
-            <h2>Tut Rửa I.P</h2>
-            <p class="product-desc">Rửa I.P bẩn, hạn chế checkpoint,...</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">35.000/1 tut</span><span class="old">60.000/1 tut</span></div>
-          <button class="buy" onclick="buy('tutruaip')" aria-label="Rửa I.P bẩn, hạn chế checkpoint,...">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 4.4 (38)</span><span class="stock">Còn Hàng</span></div>
-      </article>
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT30iHRsEA9unkqE9v1RrdbXXaj-oZRXK5-rWQ5LOojMAUG1mY8cOnO7_RW&s=10">
-          </div>
-          <div>
-            <span class="tag">Tut Trick - Black MMO</span>
-            <h2>Tut Mã Nguồn - Black MMO</h2>
-            <p class="product-desc">Kiếm 150k/1 ngày</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">2.000.000đ/1 tut</span><span class="old">5.000.000/1 tut</span></div>
-          <button class="buy" onclick="buy('tutmanguonblackmmo')" aria-label="Kiếm 150k/1 ngày">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 5.0 (1)</span><span class="stock">Còn Hàng</span></div>
-      </article>
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXsVAavRduQeoqjXJGBb5Q3s8MgDnwndUYEK4e7-5SkGf7U-xNMD228cQ&s=10">
-          </div>
-          <div>
-            <span class="tag">Tools</span>
-            <h2>Tool Dame Facebook</h2>
-            <p class="product-desc">Tool Dame Facebook full chức năng</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">100.000/1 tool</span><span class="old">300.000/1 tool</span></div>
-          <button class="buy" onclick="buy('tooldamefacebook')" aria-label="Tool Dame Facebook Full chức năng">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 5.0 (94)</span><span class="stock">Còn Hàng</span></div>
-      </article>
-
-      <article class="product">
-        <div class="product-top">
-          <div class="product-image">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWXqLMu9ulFyuxcSCCSFJgrYXaGwu3ROgxkq1YFxEUrQ&s">
-          </div>
-          <div>
-            <span class="tag">Service</span>
-            <h2>Unlock acc Facebook 180 ngày</h2>
-            <p class="product-desc">Mở khóa acc facebook dưới dạng 282(đình chỉ, vô hiệu hóa,...)</p>
-          </div>
-        </div>
-        <div class="price-row">
-          <div><span class="price">150.000/1</span><span class="old">300.000/1</span></div>
-          <button class="buy" onclick="buy('unlockfacebook282')" aria-label="Unlock acc Facebook 282">🛍</button>
-        </div>
-        <div class="rating-row"><span class="rating">★ 5.0 (94)</span><span class="stock">Còn Hàng</span></div>
-      </article>
-    </section>
-  </main>
-
-  
 <div class="payment-overlay" id="paymentOverlay" onclick="closePayment(event)">
-  <div class="payment-modal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle" onclick="event.stopPropagation()">
-    <div class="payment-head">
-      <h2 id="paymentTitle">Xác nhận thanh toán dịch vụ</h2>
-      <button class="payment-close" type="button" onclick="closePayment()" aria-label="Đóng">×</button>
-    </div>
-    <div class="payment-body">
-      <div class="payment-product">
-        <small>Gói dịch vụ đã chọn</small>
-        <strong id="paymentProduct">—</strong>
-      </div>
-      <div class="payment-info">
-        <div class="payment-row">
-          <span>Số tiền chuyển khoản</span>
-          <strong class="payment-amount" id="paymentAmount">—</strong>
-        </div>
-        <div class="payment-row">
-          <span>Gói dịch vụ đã mua</span>
-          <strong id="paymentPackage">—</strong>
-        </div>
-      </div>
-      <p class="payment-note">Vui lòng kiểm tra thông tin sản phẩm và số tiền trước khi tiếp tục thanh toán.</p>
-      <div class="payment-actions">
-        <button class="payment-cancel" type="button" onclick="closePayment()">Hủy</button>
-        <button class="payment-confirm" type="button" onclick="confirmPayment()">Xác nhận</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-<div class="payment-overlay" id="processingOverlay" onclick="closeProcessing(event)">
-  <div class="processing-modal" role="dialog" aria-modal="true" aria-labelledby="processingTitle" onclick="event.stopPropagation()">
-    <div class="processing-body">
-      <div class="processing-icon" aria-hidden="true">↻</div>
-      <h2 id="processingTitle">Quá trình chuyển tiền đang được xử lý</h2>
-      <p>Vui lòng liên hệ với admin dưới đây để nhận dịch vụ bạn đã đăng ký.</p>
-      <div class="admin-title">Liên hệ admin</div>
-      <div class="admin-links">
-        <a class="admin-link" href="https://www.instagram.com/dungquoc_1812" target="_blank" rel="noopener noreferrer">
-          <span class="admin-icon" aria-hidden="true">◎</span>
-          <span><strong>Instagram</strong><small>Liên hệ qua Instagram</small></span>
-          <span class="admin-arrow">↗</span>
-        </a>
-        <a class="admin-link" href="https://www.facebook.com/phanquocdung1812" target="_blank" rel="noopener noreferrer">
-          <span class="admin-icon" aria-hidden="true">f</span>
-          <span><strong>Facebook</strong><small>Liên hệ qua Facebook</small></span>
-          <span class="admin-arrow">↗</span>
-        </a>
-      </div>
-      <div class="processing-close-row">
-        <button type="button" onclick="closeProcessing()">Đóng</button>
-      </div>
-    </div>
-  </div>
-</div>
-
+<div class="payment-modal" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+<div class="payment-head"><h2>Xác nhận thanh toán dịch vụ</h2><button class="payment-close" type="button" onclick="closePayment()">×</button></div>
+<div class="payment-body">
+<div class="payment-product"><small>Gói dịch vụ đã chọn</small><strong id="paymentProduct">—</strong></div>
+<div class="payment-info"><div class="payment-row"><span>Số tiền chuyển khoản</span><strong class="payment-amount" id="paymentAmount">—</strong></div><div class="payment-row"><span>Gói dịch vụ đã mua</span><strong id="paymentPackage">—</strong></div></div>
+<p class="payment-note">Số tiền thực tế được lấy từ máy chủ. Hãy kiểm tra trước khi tiếp tục.</p>
+<div class="payment-actions"><button class="payment-cancel" type="button" onclick="closePayment()">Hủy</button><button class="payment-confirm" type="button" onclick="confirmPayment()">Xác nhận</button></div>
+</div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
-const API_BASE = 'https://autobank-zenix.vercel.app';
-
-const PRODUCT_CATALOG = {
-  locketgold15s: {
-    name: 'Locket Gold 15s',
-    amount: 40000,
-    package: 'Vĩnh viễn'
-  },
-
-  canvapro: {
-    name: 'Canva Pro',
-    amount: 40000,
-    package: '1 Year'
-  },
-
-  gemini5tb: {
-    name: 'Gemini Pro + 5TB Google One',
-    amount: 48888,
-    package: '18 Months'
-  },
-
-  netflixuhd: {
-    name: 'Netflix UHD Chính chủ',
-    amount: 35000,
-    package: '1 Month'
-  },
-
-  damefacebook: {
-    name: 'Dame tài khoản Facebook',
-    amount: 150000,
-    package: '1 acc'
-  },
-
-  dameinstagram: {
-    name: 'Dame tài khoản Instagram',
-    amount: 75000,
-    package: '1 acc'
-  },
-
-  dametiktok: {
-    name: 'Dame tài khoản Tiktok',
-    amount: 150000,
-    package: '1 acc'
-  },
-
-  tutbaogiamgiashopee: {
-    name: 'Tut Bào Giảm giá Shopee',
-    amount: 50000,
-    package: '1 tut'
-  },
-
-  tutruaip: {
-    name: 'Tut Rửa I.P',
-    amount: 35000,
-    package: '1 tut'
-  },
-
-  tutmanguonblackmmo: {
-    name: 'Tut Mã Nguồn - Black MMO',
-    amount: 2000000,
-    package: '1 tut'
-  },
-
-  tooldamefacebook: {
-    name: 'Tool Dame Facebook',
-    amount: 100000,
-    package: '1 tool'
-  },
-
-  unlockfacebook282: {
-    name: 'Unlock acc Facebook 180 ngày',
-    amount: 150000,
-    package: '1 acc'
-  }
+const API_BASE='https://autobank-zenix.vercel.app';
+const PAYMENT_PAGE=API_BASE+'/';
+const PRODUCT_CATALOG={
+locketgold15s:{name:'Locket Gold 15s',amount:40000,package:'Vĩnh viễn'},
+canvapro:{name:'Canva Pro',amount:40000,package:'1 Year'},
+gemini5tb:{name:'Genimi Pro + 5TB Google One',amount:48888,package:'18 Months'},
+netflixuhd:{name:'Netflix UHD Chính chủ',amount:35000,package:'1 Month'},
+damefacebook:{name:'Dame tài khoản Facebook',amount:150000,package:'1 acc'},
+dameinstagram:{name:'Dame tài khoản Instagram',amount:75000,package:'1 acc'},
+dametiktok:{name:'Dame tài khoản Tiktok',amount:150000,package:'1 acc'},
+tutbaogiamgiashopee:{name:'Tut Bào Giảm giá Shopee',amount:50000,package:'1 tut'},
+tutruaip:{name:'Tut Rửa I.P',amount:35000,package:'1 tut'},
+tutmanguonblackmmo:{name:'Tut Mã Nguồn - Black MMO',amount:2000000,package:'1 tut'},
+tooldamefacebook:{name:'Tool Dame Facebook',amount:100000,package:'1 tool'},
+unlockfacebook282:{name:'Unlock acc Facebook 180 ngày',amount:150000,package:'1 acc'}
 };
+let selectedProductId=null,creatingPayment=false,openedPaymentTab=null;
 
-let selectedProductId = null;
-let creatingPayment = false;
-let paymentTab = null;
-
-function formatVND(value) {
-  const amount = Number(value);
-
-  if (!Number.isFinite(amount)) {
-    return '—';
-  }
-
-  return amount.toLocaleString('vi-VN') + 'đ';
+function money(n){return Number(n).toLocaleString('vi-VN')+'đ'}
+function buy(productId){
+ const p=PRODUCT_CATALOG[productId]; if(!p)return toast('Sản phẩm không hợp lệ.');
+ selectedProductId=productId;
+ document.getElementById('paymentProduct').textContent=p.name;
+ document.getElementById('paymentAmount').textContent=money(p.amount);
+ document.getElementById('paymentPackage').textContent=p.name+' — '+p.package;
+ document.getElementById('paymentOverlay').classList.add('show');
+ document.body.style.overflow='hidden';
 }
-
-function buy(productId) {
-  const product = PRODUCT_CATALOG[productId];
-
-  if (!product) {
-    toast('Sản phẩm không hợp lệ.');
-    return;
-  }
-
-  selectedProductId = productId;
-
-  document.getElementById('paymentProduct').textContent =
-    product.name;
-
-  document.getElementById('paymentAmount').textContent =
-    formatVND(product.amount);
-
-  document.getElementById('paymentPackage').textContent =
-    product.name + ' — ' + product.package;
-
-  document.getElementById('paymentOverlay').classList.add('show');
-
-  document.body.style.overflow = 'hidden';
+function closePayment(event){
+ if(event&&event.target!==event.currentTarget)return;
+ if(creatingPayment)return;
+ document.getElementById('paymentOverlay').classList.remove('show');
+ document.body.style.overflow='';
+ selectedProductId=null;
 }
-
-function closePayment(event) {
-  if (event && event.target !== event.currentTarget) {
-    return;
-  }
-
-  if (creatingPayment) {
-    return;
-  }
-
-  document
-    .getElementById('paymentOverlay')
-    .classList.remove('show');
-
-  document.body.style.overflow = '';
+async function confirmPayment(){
+ if(!selectedProductId||creatingPayment)return;
+ creatingPayment=true;
+ const btn=document.querySelector('.payment-confirm');
+ if(btn){btn.disabled=true;btn.textContent='Đang tạo đơn…';}
+ // Open a blank tab synchronously so the browser does not block the later redirect.
+ openedPaymentTab=window.open('about:blank','_blank');
+ if(!openedPaymentTab){
+   creatingPayment=false;if(btn){btn.disabled=false;btn.textContent='Xác nhận';}
+   return toast('Trình duyệt đang chặn tab mới. Hãy cho phép popup cho website này rồi thử lại.');
+ }
+ try{
+   const response=await fetch(API_BASE+'/api/payment/create',{
+     method:'POST',
+     headers:{'Content-Type':'application/json','Accept':'application/json'},
+     body:JSON.stringify({product:selectedProductId}),
+     cache:'no-store'
+   });
+   const data=await response.json().catch(()=>({}));
+   if(!response.ok||!data.success||!data.payment_id)throw new Error(data.error||'Không thể tạo đơn thanh toán.');
+   const url=PAYMENT_PAGE+'?payment_id='+encodeURIComponent(data.payment_id);
+   try{openedPaymentTab.location.replace(url);}catch(e){openedPaymentTab.location.href=url;}
+   document.getElementById('paymentOverlay').classList.remove('show');
+   document.body.style.overflow='';
+   selectedProductId=null;
+ }catch(error){
+   console.error('CREATE PAYMENT ERROR:',error);
+   try{openedPaymentTab.close();}catch(e){}
+   openedPaymentTab=null;
+   toast(error.message||'Không thể tạo đơn thanh toán.');
+ }finally{
+   creatingPayment=false;
+   if(btn){btn.disabled=false;btn.textContent='Xác nhận';}
+ }
 }
-
-function closeProcessing(event) {
-  if (event && event.target !== event.currentTarget) {
-    return;
-  }
-
-  document
-    .getElementById('processingOverlay')
-    .classList.remove('show');
-
-  document.body.style.overflow = '';
+function toast(message){
+ const el=document.getElementById('toast');el.textContent=message;el.classList.add('show');
+ clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>el.classList.remove('show'),3000);
 }
-
-/*
- * Mở tab thanh toán NGAY TRONG sự kiện click.
- *
- * Không được đợi fetch() xong mới window.open(),
- * vì trình duyệt có thể coi đó là popup không do người dùng mở
- * và chặn tab.
- */
-function openPaymentTab() {
-  const tab = window.open('about:blank', '_blank');
-
-  if (!tab) {
-    toast(
-      'Trình duyệt đang chặn tab mới. Hãy cho phép popup cho website này.'
-    );
-
-    return null;
-  }
-
-  try {
-    tab.document.open();
-
-    tab.document.write(`
-      <!DOCTYPE html>
-      <html lang="vi">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport"
-              content="width=device-width,initial-scale=1.0">
-        <title>Đang tạo đơn thanh toán...</title>
-
-        <style>
-          * {
-            box-sizing: border-box;
-          }
-
-          body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff8f0;
-            color: #333;
-            font-family:
-              -apple-system,
-              BlinkMacSystemFont,
-              "Segoe UI",
-              Arial,
-              sans-serif;
-            text-align: center;
-            padding: 24px;
-          }
-
-          .box {
-            width: min(420px, 100%);
-            background: #fff;
-            border-radius: 18px;
-            padding: 30px 24px;
-            box-shadow: 0 8px 30px rgba(0,0,0,.08);
-          }
-
-          .spinner {
-            width: 42px;
-            height: 42px;
-            margin: 0 auto 18px;
-            border: 4px solid #f1d9b0;
-            border-top-color: #f5a623;
-            border-radius: 50%;
-            animation: spin .8s linear infinite;
-          }
-
-          h2 {
-            margin: 0 0 8px;
-            font-size: 20px;
-          }
-
-          p {
-            margin: 0;
-            color: #777;
-            font-size: 14px;
-            line-height: 1.6;
-          }
-
-          @keyframes spin {
-            to {
-              transform: rotate(360deg);
-            }
-          }
-        </style>
-      </head>
-
-      <body>
-        <div class="box">
-          <div class="spinner"></div>
-
-          <h2>
-            Đang tạo đơn thanh toán...
-          </h2>
-
-          <p>
-            Vui lòng chờ trong giây lát.
-          </p>
-        </div>
-      </body>
-      </html>
-    `);
-
-    tab.document.close();
-
-  } catch (error) {
-    console.warn(
-      'Không thể hiển thị màn hình loading:',
-      error
-    );
-  }
-
-  return tab;
-}
-
-/*
- * Hiển thị lỗi ngay trong tab thanh toán
- * nếu API tạo đơn thất bại.
- */
-function showPaymentTabError(tab, message) {
-  if (!tab || tab.closed) {
-    return;
-  }
-
-  const safeMessage = String(
-    message || 'Không thể tạo đơn thanh toán.'
-  )
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-
-  try {
-    tab.document.open();
-
-    tab.document.write(`
-      <!DOCTYPE html>
-      <html lang="vi">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport"
-              content="width=device-width,initial-scale=1.0">
-
-        <title>Lỗi thanh toán</title>
-
-        <style>
-          * {
-            box-sizing: border-box;
-          }
-
-          body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff8f0;
-            color: #333;
-            font-family:
-              -apple-system,
-              BlinkMacSystemFont,
-              "Segoe UI",
-              Arial,
-              sans-serif;
-            text-align: center;
-            padding: 24px;
-          }
-
-          .box {
-            width: min(430px,100%);
-            background: #fff;
-            border-radius: 18px;
-            padding: 30px 24px;
-            box-shadow: 0 8px 30px rgba(0,0,0,.08);
-          }
-
-          h2 {
-            margin: 0 0 10px;
-            color: #c0392b;
-            font-size: 20px;
-          }
-
-          p {
-            margin: 0;
-            color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-            word-break: break-word;
-          }
-
-          button {
-            margin-top: 18px;
-            border: 0;
-            border-radius: 10px;
-            padding: 10px 18px;
-            background: #f5a623;
-            color: #fff;
-            font-weight: 800;
-            cursor: pointer;
-          }
-        </style>
-      </head>
-
-      <body>
-        <div class="box">
-
-          <h2>
-            Không thể tạo đơn thanh toán
-          </h2>
-
-          <p>
-            ${safeMessage}
-          </p>
-
-          <button onclick="window.close()">
-            Đóng tab
-          </button>
-
-        </div>
-      </body>
-      </html>
-    `);
-
-    tab.document.close();
-
-  } catch (error) {
-    try {
-      tab.close();
-    } catch (_) {}
-  }
-}
-
-/*
- * XÁC NHẬN THANH TOÁN
- *
- * 1. Mở tab mới ngay lập tức.
- * 2. Gọi backend tạo payment.
- * 3. Backend tự quyết định amount + code.
- * 4. Tab mới chuyển sang:
- *
- * https://autobank-zenix.vercel.app/?payment_id=THẬT
- */
-async function confirmPayment() {
-  if (!selectedProductId || creatingPayment) {
-    return;
-  }
-
-  const productId = selectedProductId;
-
-  const product = PRODUCT_CATALOG[productId];
-
-  if (!product) {
-    toast('Sản phẩm không hợp lệ.');
-    return;
-  }
-
-  /*
-   * QUAN TRỌNG:
-   * Phải mở tab trước await fetch().
-   */
-  paymentTab = openPaymentTab();
-
-  if (!paymentTab) {
-    return;
-  }
-
-  creatingPayment = true;
-
-  const confirmBtn =
-    document.querySelector('.payment-confirm');
-
-  if (confirmBtn) {
-    confirmBtn.disabled = true;
-    confirmBtn.textContent = 'Đang tạo đơn…';
-  }
-
-  try {
-    const response = await fetch(
-      `${API_BASE}/api/payment/create`,
-      {
-        method: 'POST',
-
-        headers: {
-          'Content-Type': 'application/json'
-        },
-
-        body: JSON.stringify({
-          product: productId
-        })
-      }
-    );
-
-    const data =
-      await response.json().catch(() => ({}));
-
-    if (
-      !response.ok ||
-      !data.success ||
-      !data.payment_id
-    ) {
-      throw new Error(
-        data.error ||
-        'Không thể tạo đơn thanh toán.'
-      );
-    }
-
-    /*
-     * CHỈ truyền payment_id.
-     *
-     * Không truyền:
-     * - amount
-     * - code
-     *
-     * để người dùng không thể sửa giá bằng URL.
-     */
-    const paymentUrl =
-      `${API_BASE}/?payment_id=${encodeURIComponent(
-        data.payment_id
-      )}`;
-
-    /*
-     * replace() để tab mới đi thẳng đến trang thanh toán.
-     */
-    paymentTab.location.replace(paymentUrl);
-
-    /*
-     * Đóng popup xác nhận ở tab shop.
-     */
-    document
-      .getElementById('paymentOverlay')
-      .classList.remove('show');
-
-    document.body.style.overflow = '';
-
-  } catch (error) {
-    console.error(
-      'CREATE PAYMENT ERROR:',
-      error
-    );
-
-    showPaymentTabError(
-      paymentTab,
-      error.message ||
-      'Không thể tạo đơn thanh toán.'
-    );
-
-    toast(
-      error.message ||
-      'Không thể tạo đơn thanh toán.'
-    );
-
-  } finally {
-    creatingPayment = false;
-
-    if (confirmBtn) {
-      confirmBtn.disabled = false;
-      confirmBtn.textContent = 'Xác nhận';
-    }
-  }
-}
-
-function toast(message) {
-  const el =
-    document.getElementById('toast');
-
-  if (!el) {
-    return;
-  }
-
-  el.textContent = message;
-
-  el.classList.add('show');
-
-  clearTimeout(
-    window.__toastTimer
-  );
-
-  window.__toastTimer =
-    setTimeout(
-      () => {
-        el.classList.remove('show');
-      },
-      2500
-    );
-}
-
-/*
- * Nhấn ESC để đóng popup xác nhận.
- */
-document.addEventListener(
-  'keydown',
-  function(event) {
-    if (event.key !== 'Escape') {
-      return;
-    }
-
-    const overlay =
-      document.getElementById(
-        'paymentOverlay'
-      );
-
-    if (
-      overlay &&
-      overlay.classList.contains('show') &&
-      !creatingPayment
-    ) {
-      closePayment();
-    }
-  }
-);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!creatingPayment)closePayment();});
 </script>
 </body>
 </html>
