@@ -649,7 +649,7 @@ const PRODUCT_CATALOG = {
     }
 
     try{
-      const response = await fetch('/api/payment/create', {
+      const response = await fetch('https://autobank-zenix.vercel.app/api/payment/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ product: selectedProductId })
