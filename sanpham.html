@@ -663,7 +663,7 @@ const PRODUCT_CATALOG = {
 
       // Chỉ truyền payment_id. Số tiền và mã chuyển khoản do backend quyết định.
       window.location.href =
-        '/?payment_id=' + encodeURIComponent(data.payment_id);
+        'https://autobank-zenix.vercel.app/?payment_id=${encodeURIComponent(data.payment_id)}';
     }catch(error){
       console.error('CREATE PAYMENT ERROR:', error);
       toast(error.message || 'Không thể tạo đơn thanh toán.');
