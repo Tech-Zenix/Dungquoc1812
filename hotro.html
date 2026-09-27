@@ -3,28 +3,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080808">
+  <meta name="theme-color" content="#000000">
   <title>Zenix Lab Support</title>
   <link rel="icon" type="image/png" href="img.png">
   <style>
-    :root{--bg:#080808;--panel:#101010;--red:#ff2525;--text:#f5f5f5;--muted:#a6a6ad;--max:900px}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);min-height:100vh;background:radial-gradient(circle at 80% 10%,rgba(255,25,25,.12),transparent 32%),radial-gradient(circle at 15% 80%,rgba(255,0,0,.06),transparent 28%),var(--bg);line-height:1.5}
-    a{text-decoration:none;color:inherit}
-    .wrap{width:min(calc(100% - 32px),var(--max));margin:auto;padding:28px 0 50px}
-    .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
-    .logo{font-size:29px;font-weight:900;letter-spacing:-1.7px;font-style:italic}.logo .dq{color:#ff2828}.logo .mmo{color:#f3f3f3}
-    .back{border:1px solid #4a1818;background:#121212;color:#ddd;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:750}.back:hover{border-color:#ff3030;color:#fff}
-    .panel{border:1px solid #581717;border-radius:18px;background:linear-gradient(145deg,rgba(24,13,13,.98),rgba(14,14,14,.98));box-shadow:0 25px 70px rgba(0,0,0,.4),0 0 35px rgba(255,0,0,.07);overflow:hidden}
-    .intro{padding:28px 30px;border-bottom:1px solid #2d1717;background:radial-gradient(circle at 100% 0,rgba(255,0,0,.12),transparent 35%)}
-    .eyebrow{color:#ff3b3b;font-size:13px;font-weight:850;margin-bottom:5px}.intro h1{font-size:clamp(27px,4vw,38px);line-height:1.12;letter-spacing:-1px}.intro p{margin-top:9px;color:#999;font-size:13px}
-    .support-block{padding:25px 30px}.support-block+.support-block{border-top:1px solid #2d2020}.support-block h2{font-size:20px;margin-bottom:7px}.support-block>p{color:#aaa;font-size:13px;margin-bottom:17px}
-    .links{display:grid;gap:10px}.social{display:flex;align-items:center;gap:13px;padding:13px 15px;border:1px solid #302020;border-radius:12px;background:#111;transition:.2s}.social:hover{border-color:#7b2020;transform:translateY(-1px);background:#151010}.icon{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:#250909;border:1px solid #641919;color:#ff3030;flex:0 0 40px}.icon svg{width:21px;height:21px;fill:currentColor}.social strong{font-size:14px}.social small{display:block;color:#777;font-size:10px;margin-top:1px}.arrow{margin-left:auto;color:#ff3030;font-size:20px}
-    .footer-note{text-align:center;color:#666;font-size:10px;margin-top:22px}
-    @media(max-width:600px){.wrap{width:min(calc(100% - 24px),var(--max));padding-top:16px}.top{margin-bottom:16px}.logo{font-size:25px}.back{padding:8px 11px}.intro,.support-block{padding:22px 18px}.intro h1{font-size:27px}.support-block h2{font-size:18px}.social{padding:12px}.icon{width:38px;height:38px;flex-basis:38px}}
+    /* ============================================================
+       LIQUID GLASS PRO — iOS 26 MONOCHROME ULTRALIGHT (HỖ TRỢ)
+       High-transparency refractive glass, organic ambient caustics,
+       whisper-quiet minimalism & buttery Apple spring physics.
+       ============================================================ */
+    :root {
+      --bg: #030305;
+      --bg-surface: #07070a;
+      --panel: rgba(255, 255, 255, 0.024);
+      --panel-hover: rgba(255, 255, 255, 0.05);
+      --glass-stroke: rgba(255, 255, 255, 0.09);
+      --glass-stroke-hover: rgba(255, 255, 255, 0.26);
+      --glass-specular: rgba(255, 255, 255, 0.28);
+      --text: #f5f5f7;
+      --text-pure: #ffffff;
+      --muted: #86868f;
+      --muted-light: #9c9ca4;
+      --white: #ffffff;
+      --black: #000000;
+      --max: 920px;
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 32px;
+      --radius-pill: 9999px;
+      --ease-ios: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Minimalist Glass Scrollbar */
+    ::-webkit-scrollbar { width: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: var(--radius-pill); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.24); }
+
+    /* Ethereal Ambient Liquid Light (Soothing & Glare-Free) */
+    .liquid-ambient {
+      position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden;
+      background: radial-gradient(circle at 50% 0%, #07070b 0%, #030305 100%);
+    }
+    .liquid-orb {
+      position: absolute; border-radius: 50%; filter: blur(130px); opacity: 0.11; mix-blend-mode: screen;
+      animation: orbFloat 26s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .liquid-orb-1 {
+      width: 680px; height: 680px; background: radial-gradient(circle, rgba(255, 255, 255, 0.20) 0%, transparent 70%);
+      top: -190px; left: 22%; animation-duration: 24s;
+    }
+    .liquid-orb-2 {
+      width: 580px; height: 580px; background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, transparent 70%);
+      top: 32%; right: -130px; animation-duration: 30s; animation-delay: -7s;
+    }
+    .liquid-orb-3 {
+      width: 520px; height: 520px; background: radial-gradient(circle, rgba(255, 255, 255, 0.11) 0%, transparent 70%);
+      bottom: -140px; left: 6%; animation-duration: 32s; animation-delay: -14s;
+    }
+    @keyframes orbFloat {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(45px, 35px) scale(1.06); }
+      100% { transform: translate(-35px, 60px) scale(0.96); }
+    }
+
+    a { text-decoration: none; color: inherit; }
+    .wrap { width: min(calc(100% - 36px), var(--max)); margin: auto; padding: 44px 0 72px; }
+
+    /* Top Navigation */
+    .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 34px; }
+    .logo {
+      display: flex; align-items: center; gap: 4px; font-size: 26px; font-weight: 900; letter-spacing: -0.04em;
+      font-style: italic; transition: transform 0.35s var(--ease-ios);
+    }
+    .logo:hover { transform: scale(1.025); }
+    .logo .dq { color: var(--white); text-shadow: 0 0 25px rgba(255, 255, 255, 0.35); }
+    .logo .lab { color: var(--muted-light); font-weight: 700; }
+    .back {
+      display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.035); color: #f5f5f7; border-radius: var(--radius-pill);
+      padding: 10px 22px; font-size: 13.5px; font-weight: 700; backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px); transition: all 0.35s var(--ease-ios);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.14), 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+    .back:hover {
+      background: #ffffff; color: #000000; border-color: #ffffff; transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 4px 28px rgba(255, 255, 255, 0.32);
+    }
+    .back:active { transform: scale(0.97); }
+
+    /* Ultra-Translucent Liquid Glass Support Panel */
+    .panel {
+      border: 1px solid var(--glass-stroke); border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.032) 0%, rgba(255, 255, 255, 0.008) 100%);
+      backdrop-filter: blur(50px) saturate(190%); -webkit-backdrop-filter: blur(50px) saturate(190%);
+      box-shadow: 0 35px 90px -15px rgba(0, 0, 0, 0.85), inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.2), inset 0 0 24px rgba(255, 255, 255, 0.015);
+      overflow: hidden;
+    }
+    .intro {
+      padding: 42px 46px; border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      background: radial-gradient(ellipse 80% 80% at 100% 0%, rgba(255, 255, 255, 0.04), transparent 60%);
+    }
+    .eyebrow {
+      display: inline-block; color: var(--text-pure); font-size: 11.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 5px 14px; border-radius: var(--radius-pill); background: rgba(255, 255, 255, 0.045); border: 1px solid rgba(255, 255, 255, 0.12);
+      margin-bottom: 15px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.16);
+    }
+    .intro h1 { font-size: clamp(28px, 4vw, 42px); line-height: 1.15; letter-spacing: -0.035em; font-weight: 900; color: var(--text-pure); }
+    .intro p { margin-top: 10px; color: var(--muted-light); font-size: 15px; line-height: 1.55; }
+
+    /* Support Blocks */
+    .support-block { padding: 36px 46px; }
+    .support-block + .support-block { border-top: 1px solid rgba(255, 255, 255, 0.06); }
+    .support-block h2 { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; color: var(--text-pure); margin-bottom: 8px; }
+    .support-block > p { color: var(--muted-light); font-size: 14px; margin-bottom: 24px; line-height: 1.55; }
+    .links { display: grid; gap: 14px; }
+    .social {
+      display: flex; align-items: center; gap: 18px; padding: 18px 24px; border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.032) 0%, rgba(255, 255, 255, 0.008) 100%);
+      backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
+      transition: all 0.35s var(--ease-ios); box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 8px 24px -6px rgba(0, 0, 0, 0.4);
+    }
+    .social:hover {
+      border-color: rgba(255, 255, 255, 0.28);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.065) 0%, rgba(255, 255, 255, 0.02) 100%);
+      transform: translateY(-3px) scale(1.008);
+      box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.7), 0 0 28px rgba(255, 255, 255, 0.04), inset 0 1.5px 1.5px rgba(255, 255, 255, 0.25);
+    }
+    .social:active { transform: scale(0.98); }
+    .icon {
+      width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center;
+      background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.14); color: var(--text-pure); flex: 0 0 48px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.2); transition: all 0.35s var(--ease-ios);
+    }
+    .social:hover .icon { background: #ffffff; color: #000000; border-color: #ffffff; transform: scale(1.05); }
+    .icon svg { width: 22px; height: 22px; fill: currentColor; }
+    .social strong { font-size: 15px; font-weight: 750; color: var(--text-pure); letter-spacing: -0.01em; }
+    .social small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .arrow { margin-left: auto; color: var(--muted-light); font-size: 22px; transition: all 0.35s var(--ease-ios); }
+    .social:hover .arrow { color: #ffffff; transform: translateX(4px); }
+    .footer-note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 32px; }
+
+    @media(max-width: 600px) {
+      .wrap { width: min(calc(100% - 24px), var(--max)); padding-top: 20px; }
+      .top { margin-bottom: 22px; }
+      .logo { font-size: 24px; }
+      .back { padding: 8px 16px; font-size: 12.5px; }
+      .panel { border-radius: 26px; }
+      .intro, .support-block { padding: 28px 22px; }
+      .intro h1 { font-size: 28px; }
+      .support-block h2 { font-size: 17px; }
+      .social { padding: 15px 18px; }
+      .icon { width: 44px; height: 44px; flex-basis: 44px; border-radius: 14px; }
+    }
+
   </style>
 </head>
 <body>
+<div class="liquid-ambient" aria-hidden="true"><div class="liquid-orb liquid-orb-1"></div><div class="liquid-orb liquid-orb-2"></div><div class="liquid-orb liquid-orb-3"></div></div>
+
   <div class="wrap">
     <div class="top"><a class="logo" href="index.html" aria-label="Zenix Lab"><span class="dq">Zenix</span><span class="lab">Lab</span></a><a class="back" href="index.html">← 🏠Trang chủ</a></div>
     <section class="panel">
