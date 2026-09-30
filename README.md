@@ -1,2 +1,5 @@
 # Dungquoc1812
-for main web
+Dev Phan Quốc Dũng
+- Subdomain duckdns.org
+- Vercel for deploy
+
