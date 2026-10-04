@@ -811,7 +811,7 @@
       }
     }
 
-    async function updateInlinePrice(id) {
+   async function updateInlinePrice(id) {
       const newPrice = document.getElementById(`inline-price-${id}`).value;
       if (!newPrice) return alert('Vui lòng nhập giá.');
 
@@ -826,12 +826,14 @@
           body: JSON.stringify({
             id: id,
             name: prod ? prod.name : id,
+            category: prod ? prod.category : 'Ứng dụng',
+            package: prod ? prod.package : 'Vĩnh viễn',
             amount: parseInt(newPrice)
           })
         });
         const data = await res.json().catch(() => ({}));
         if (data.success) {
-          toast(`✓ ĐÃ CẬP NHẬT GIÁ MỚI CHO [${id}]: ${Number(newPrice).toLocaleString('vi-VN')} đ`);
+          toast(`✓ ĐÃ LƯU GIÁ MỚI CHO [${id}]: ${Number(newPrice).toLocaleString('vi-VN')} đ`);
           loadProducts();
         } else {
           alert(data.error || 'Cập nhật giá thất bại.');
