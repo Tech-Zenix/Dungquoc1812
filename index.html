@@ -2640,6 +2640,54 @@
 
 <script>
 /* ============================================================
+   TỰ ĐỘNG ĐỒNG BỘ GIÁ TỪ NEON DB LÊN TOÀN BỘ GIAO DIỆN
+   ============================================================ */
+async function syncLivePrices() {
+  try {
+    // Thêm timestamp ?_t= để đảm bảo luôn lấy giá mới nhất, không bị lưu cache
+    const res = await fetch(`${PAYMENT_API}/api/products?_t=${Date.now()}`, {
+      cache: 'no-store'
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!data.success || !data.products) return;
+
+    data.products.forEach(p => {
+      // 1. Cập nhật vào danh mục thanh toán
+      if (PRODUCT_CATALOG[p.id]) {
+        PRODUCT_CATALOG[p.id].amount = Number(p.amount);
+        if (p.package) PRODUCT_CATALOG[p.id].package = p.package;
+      }
+
+      // 2. Tìm tất cả các nút mua của sản phẩm này (trang chủ & kho sản phẩm)
+      const buyBtns = document.querySelectorAll(`button[onclick*="'${p.id}'"]`);
+      buyBtns.forEach(btn => {
+        const card = btn.closest('.product');
+        if (card) {
+          // Cập nhật giá bán mới
+          const priceEl = card.querySelector('.price');
+          if (priceEl) {
+            priceEl.textContent = `${Number(p.amount).toLocaleString('vi-VN')}đ/${p.package || 'Vĩnh viễn'}`;
+          }
+          // Cập nhật giá niêm yết cũ (nếu có)
+          const oldPriceEl = card.querySelector('.old');
+          if (oldPriceEl && p.old_amount) {
+            oldPriceEl.textContent = `${Number(p.old_amount).toLocaleString('vi-VN')}đ/${p.package || 'Vĩnh viễn'}`;
+          }
+        }
+      });
+    });
+    console.log('✓ ZENIX LAB: Đồng bộ bảng giá Neon DB thành công.');
+  } catch (err) {
+    console.warn('Lỗi đồng bộ giá:', err);
+  }
+}
+
+// Tự động kích hoạt ngay khi trang web tải xong
+window.addEventListener('DOMContentLoaded', () => {
+  syncLivePrices();
+});
+
+/* ============================================================
    ZENIX LAB PAYMENT CONFIGURATION & CATALOG (ALL 13 PRODUCTS)
    ============================================================ */
 const PAYMENT_API = 'https://autobank-zenix.vercel.app';
