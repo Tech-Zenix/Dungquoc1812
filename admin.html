@@ -801,9 +801,10 @@
             <td>
               <input type="number" id="inline-price-${p.id}" value="${p.amount}" class="form-input" style="width: 115px; padding: 6px 8px; font-size: 13px;">
             </td>
-            <td>
-              <button class="btn btn-primary" onclick="updateInlineProduct('${p.id}')">💾 Lưu thay đổi</button>
-            </td>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn btn-primary" onclick="updateInlineProduct('${p.id}')">💾 Lưu</button>
+   	      <button class="btn btn-danger" onclick="deleteProduct('${p.id}', '${p.name}')">🗑️ Xóa</button>
+           </div>
           </tr>
         `).join('');
       } catch (err) {
@@ -841,6 +842,32 @@
           loadProducts();
         } else {
           alert(data.error || 'Cập nhật thất bại.');
+        }
+      } catch (err) {
+        alert('Lỗi: ' + err.message);
+      }
+    }
+
+    async function deleteProduct(id, name) {
+      if (!confirm(`Bạn có chắc chắn muốn xóa sản phẩm [${name}] khỏi hệ thống không?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/products`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-password': currentAdminPassword
+          },
+          body: JSON.stringify({ id: id })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (data.success) {
+          toast(`✓ ĐÃ XÓA SẢN PHẨM [${name}] KHỎI HỆ THỐNG.`);
+          loadProducts(); // Tải lại danh sách sau khi xóa
+        } else {
+          alert(data.error || 'Xóa sản phẩm thất bại.');
         }
       } catch (err) {
         alert('Lỗi: ' + err.message);
