@@ -706,8 +706,9 @@
     });
 
     // Xử lý đăng nhập thông minh: Kiểm tra đúng mật khẩu là MỞ KHÓA NGAY LẬP TỨC
+// XÁC THỰC TRỰC TIẾP: ĐÚNG MẬT KHẨU LÀ MỞ KHÓA NGAY LẬP TỨC
     function handleLogin(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
       const passInput = document.getElementById('gatePass');
       const pass = passInput.value.trim();
       const alertBox = document.getElementById('gateAlert');
