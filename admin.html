@@ -523,6 +523,10 @@
                 <label class="form-label">Đường dẫn ảnh Thumbnail (URL)</label>
                 <input type="url" id="pImage" class="form-input" placeholder="https://..." value="https://placehold.co/128x128/1c1c24/00f0ff?text=ZENIX" oninput="updateLivePreview()">
               </div>
+             <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label" style="color: var(--cyber-green);">🔗 Link / Nội dung bàn giao trả cho khách (Tự động gửi sau khi thanh toán)</label>
+                <input type="text" id="pDeliveryLink" class="form-input" placeholder="Dán link Google Drive, link tải hoặc tài khoản mẫu trả khách tại đây...">
+             </div>
               <div class="form-group" style="grid-column: span 2;">
                 <label class="form-label">Mô tả chi tiết sản phẩm</label>
                 <textarea id="pDesc" class="form-textarea" rows="2" placeholder="Ghi chú tính năng, chế độ bảo hành..." oninput="updateLivePreview()">Sản phẩm chất lượng cao, bảo hành đầy đủ trọn đời.</textarea>
@@ -590,9 +594,9 @@
                 <th>ID</th>
                 <th>Tên sản phẩm</th>
                 <th>Loại</th>
-                <th>Gói</th>
-                <th>Giá hiện tại (VNĐ)</th>
-                <th>Sửa giá mới</th>
+                <th>Gói / Thời hạn</th>
+                <th>Giá (VNĐ)</th>
+                <th>Link trả khách</th>
                 <th>Hành động</th>
               </tr>
             </thead>
@@ -796,15 +800,21 @@
             <td><b>${p.name}</b></td>
             <td><span class="preview-tag">${p.category}</span></td>
             <td>
-              <input type="text" id="inline-pkg-${p.id}" value="${p.package || 'Vĩnh viễn'}" class="form-input" style="width: 115px; padding: 6px 8px; font-size: 13px;">
+              <input type="text" id="inline-pkg-${p.id}" value="${p.package || 'Vĩnh viễn'}" class="form-input" style="width: 105px; padding: 6px 8px; font-size: 13px;">
             </td>
             <td>
-              <input type="number" id="inline-price-${p.id}" value="${p.amount}" class="form-input" style="width: 115px; padding: 6px 8px; font-size: 13px;">
+              <input type="number" id="inline-price-${p.id}" value="${p.amount}" class="form-input" style="width: 105px; padding: 6px 8px; font-size: 13px;">
             </td>
-            <div style="display: flex; gap: 6px;">
-              <button class="btn btn-primary" onclick="updateInlineProduct('${p.id}')">💾 Lưu</button>
-   	      <button class="btn btn-danger" onclick="deleteProduct('${p.id}', '${p.name}')">🗑️ Xóa</button>
-           </div>
+            <td>
+              <!-- KHUNG DÁN LINK TRẢ CHO KHÁCH HÀNG -->
+              <input type="text" id="inline-link-${p.id}" value="${p.delivery_link || ''}" placeholder="Dán link trả khách..." class="form-input" style="width: 180px; padding: 6px 8px; font-size: 12px; color: var(--cyber-blue);">
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-primary" onclick="updateInlineProduct('${p.id}')">💾 Lưu</button>
+                <button class="btn btn-danger" onclick="deleteProduct('${p.id}', '${p.name}')">🗑️ Xóa</button>
+              </div>
+            </td>
           </tr>
         `).join('');
       } catch (err) {
@@ -815,6 +825,7 @@
     async function updateInlineProduct(id) {
       const newPrice = document.getElementById(`inline-price-${id}`).value;
       const newPackage = document.getElementById(`inline-pkg-${id}`).value.trim();
+      const newLink = document.getElementById(`inline-link-${id}`).value.trim();
 
       if (!newPrice || !newPackage) {
         return alert('Vui lòng nhập đầy đủ giá tiền và thời hạn.');
@@ -833,12 +844,13 @@
             name: prod ? prod.name : id,
             category: prod ? prod.category : 'Ứng dụng',
             package: newPackage,
-            amount: parseInt(newPrice)
+            amount: parseInt(newPrice),
+            delivery_link: newLink
           })
         });
         const data = await res.json().catch(() => ({}));
         if (data.success) {
-          toast(`✓ ĐÃ CẬP NHẬT: [${id}] - Gói: ${newPackage} - Giá: ${Number(newPrice).toLocaleString('vi-VN')} đ`);
+          toast(`✓ ĐÃ LƯU: [${id}] - Gói: ${newPackage} - Giá: ${Number(newPrice).toLocaleString('vi-VN')} đ`);
           loadProducts();
         } else {
           alert(data.error || 'Cập nhật thất bại.');
