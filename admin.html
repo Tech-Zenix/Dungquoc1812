@@ -6,9 +6,6 @@
   <title>ZENIX DEFENSE COMMAND — Trung Tâm Chỉ Huy & Quản Trị Hệ Thống Quốc Gia</title>
   <link rel="icon" type="image/png" href="https://dungquoc1812.vercel.app/img.png">
   <style>
-    /* ============================================================
-       NATIONAL CYBER COMMAND & QUANTUM HUD UI STYLES
-       ============================================================ */
     :root {
       --bg: #030305;
       --bg-surface: #06060c;
@@ -21,7 +18,6 @@
       --cyber-green: #00ff66;
       --cyber-green-glow: rgba(0, 255, 102, 0.25);
       --cyber-crimson: #ff0055;
-      --cyber-crimson-glow: rgba(255, 0, 85, 0.3);
       --cyber-amber: #ffaa00;
       --cyber-purple: #b537f2;
       --text: #f5f5f7;
@@ -44,7 +40,6 @@
       position: relative;
     }
 
-    /* Ambient Quantum Grid & Radar Caustics */
     .quantum-bg {
       position: fixed; inset: 0; pointer-events: none; z-index: -1;
       background: radial-gradient(circle at 50% 0%, #080d1a 0%, #030305 100%);
@@ -67,9 +62,6 @@
       100% { transform: translateX(-50%) scale(1.2); opacity: 1; }
     }
 
-    /* ============================================================
-       SECURITY CLEARANCE GATE (LOGIN MODAL)
-       ============================================================ */
     #gateModal {
       position: fixed; inset: 0; z-index: 10000;
       background: rgba(3, 3, 5, 0.94);
@@ -130,9 +122,6 @@
       display: none;
     }
 
-    /* ============================================================
-       TOP COMMAND HUD HEADER
-       ============================================================ */
     .command-header {
       border-bottom: 1px solid var(--glass-stroke);
       background: rgba(3, 3, 5, 0.85); backdrop-filter: blur(20px);
@@ -166,9 +155,6 @@
     }
     .telem-val { font-weight: 700; color: var(--cyber-blue); }
 
-    /* ============================================================
-       NAVIGATION TABS
-       ============================================================ */
     .nav-bar {
       max-width: 1440px; margin: 20px auto 0; padding: 0 24px;
       display: flex; gap: 10px; border-bottom: 1px solid var(--glass-stroke);
@@ -185,19 +171,13 @@
       text-shadow: 0 0 10px var(--cyber-blue-glow);
     }
 
-    /* Container */
     .main-container {
       max-width: 1440px; margin: 24px auto 60px; padding: 0 24px;
     }
 
-    /* Tab Panes */
     .tab-pane { display: none; }
-    .tab-pane.active { display: block; animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .tab-pane.active { display: block; }
 
-    /* ============================================================
-       CARDS & GRIDS
-       ============================================================ */
     .grid-metrics {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 24px;
     }
@@ -214,7 +194,6 @@
     .metric-num { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
     .metric-delta { font-size: 12px; font-family: var(--mono); margin-top: 4px; }
     .delta-pos { color: var(--cyber-green); }
-    .delta-warn { color: var(--cyber-amber); }
 
     .panel {
       background: var(--panel); border: 1px solid var(--glass-stroke);
@@ -231,9 +210,6 @@
     }
     .panel-title span { color: var(--cyber-blue); }
 
-    /* ============================================================
-       FORM CONTROLS & PRODUCT STYLING MATCH
-       ============================================================ */
     .form-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;
     }
@@ -252,7 +228,6 @@
       border-color: var(--cyber-blue); box-shadow: 0 0 12px var(--cyber-blue-glow);
     }
 
-    /* Live Preview Card (Matching ZENIX LAB 100%) */
     .preview-wrapper {
       padding: 16px; border: 1px dashed var(--glass-stroke); border-radius: var(--radius-md);
       background: rgba(0, 0, 0, 0.3);
@@ -292,9 +267,6 @@
       padding: 8px 16px; border-radius: var(--radius-pill); border: none; cursor: default;
     }
 
-    /* ============================================================
-       TABLES (TRANSACTIONS & INLINE EDITING)
-       ============================================================ */
     .table-responsive { width: 100%; overflow-x: auto; }
     .cyber-table {
       width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;
@@ -321,9 +293,7 @@
     .status-PENDING { background: rgba(255, 170, 0, 0.15); color: var(--cyber-amber); border: 1px solid var(--cyber-amber); }
     .status-PAID { background: rgba(0, 255, 102, 0.15); color: var(--cyber-green); border: 1px solid var(--cyber-green); }
     .status-DELIVERED { background: rgba(0, 240, 255, 0.15); color: var(--cyber-blue); border: 1px solid var(--cyber-blue); }
-    .status-CANCELLED { background: rgba(255, 0, 85, 0.15); color: var(--cyber-crimson); border: 1px solid var(--cyber-crimson); }
 
-    /* Action Buttons */
     .btn {
       padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid transparent;
       font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;
@@ -336,9 +306,6 @@
     .btn-danger { background: rgba(255, 0, 85, 0.2); color: var(--cyber-crimson); border-color: var(--cyber-crimson); }
     .btn-danger:hover { background: var(--cyber-crimson); color: #fff; }
 
-    /* ============================================================
-       DISPATCH DELIVERY MODAL (ADMIN FULFILLMENT & PREVIEW)
-       ============================================================ */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 1000; background: rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(15px); display: none; align-items: center; justify-content: center;
@@ -351,7 +318,6 @@
       padding: 28px; box-shadow: 0 20px 60px rgba(0, 240, 255, 0.2);
     }
 
-    /* Toast Notification */
     #toast {
       position: fixed; bottom: 24px; right: 24px; z-index: 9999;
       background: rgba(6, 6, 12, 0.95); border: 1px solid var(--cyber-blue);
@@ -364,13 +330,12 @@
 </head>
 <body>
 
-  <!-- Ambient Background -->
   <div class="quantum-bg">
     <div class="grid-mesh"></div>
     <div class="radar-sweep"></div>
   </div>
 
-  <!-- SECURITY CLEARANCE GATE MODAL (PASSWORD: Shin_18122010) -->
+  <!-- SECURITY CLEARANCE GATE -->
   <div id="gateModal">
     <div class="gate-card">
       <div class="gate-icon">⚡</div>
@@ -397,12 +362,12 @@
     </div>
     <div class="telemetry-strip">
       <div class="telem-item">
-        <span>SSL CIPHER:</span>
-        <span class="telem-val">AES-256-GCM</span>
+        <span>BACKEND:</span>
+        <span class="telem-val" id="hudBackendStatus">AUTOBANK-ZENIX</span>
       </div>
       <div class="telem-item">
         <span>DATABASE:</span>
-        <span class="telem-val" id="hudDbStatus">NEON CLOUD</span>
+        <span class="telem-val">NEON CLOUD</span>
       </div>
       <div class="telem-item">
         <span>PING:</span>
@@ -421,22 +386,18 @@
 
   <main class="main-container">
 
-    <!-- ============================================================
-         TAB 1: ANALYTICS, TRAFFIC & CYBER SECURITY OPERATIONS CENTER
-         ============================================================ -->
+    <!-- TAB 1: ANALYTICS -->
     <div id="tab-analytics" class="tab-pane active">
-      
-      <!-- Key Performance Metrics -->
       <div class="grid-metrics">
         <div class="metric-card">
           <div class="metric-label">Doanh thu hôm nay (VNĐ)</div>
           <div class="metric-num" id="valRevToday">0 đ</div>
-          <div class="metric-delta delta-pos">↑ Tự động ghi nhận từ PayOS/VietQR</div>
+          <div class="metric-delta delta-pos">↑ Tự động ghi nhận từ SePay/VietQR</div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Người dùng Realtime đang truy cập</div>
           <div class="metric-num" id="valRealtimeUsers">158</div>
-          <div class="metric-delta delta-pos">● Đang hoạt động trên duckdns.org</div>
+          <div class="metric-delta delta-pos">● Đang hoạt động trên phanquocdung.duckdns.org</div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Lượt xem trang 24H (Pageviews)</div>
@@ -451,8 +412,6 @@
       </div>
 
       <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
-        
-        <!-- Live Cyber Operations & Vulnerability Center -->
         <div class="panel">
           <div class="panel-header">
             <div class="panel-title">🛡️ <span>Trung Tâm Giám Sát Lỗ Hổng & An Ninh Mạng</span></div>
@@ -471,7 +430,7 @@
             </div>
           </div>
 
-          <div style="font-size: 12px; font-family: var(--mono); color: var(--text-muted); margin-bottom: 10px;">NHẬT KÝ SỰ KIỆN AN NINH GẦN NHẤT (SECURITY AUDIT LOGS):</div>
+          <div style="font-size: 12px; font-family: var(--mono); color: var(--text-muted); margin-bottom: 10px;">NHẬT KÝ SỰ KIỆN AN NINH GẦN NHẤT:</div>
           <div class="table-responsive">
             <table class="cyber-table">
               <thead>
@@ -484,7 +443,6 @@
           </div>
         </div>
 
-        <!-- System Architecture Diagnostics -->
         <div class="panel">
           <div class="panel-header">
             <div class="panel-title">⚙️ <span>Hạ Tầng Quốc Gia</span></div>
@@ -495,8 +453,8 @@
               <span style="font-family: var(--mono); color: var(--cyber-blue);">phanquocdung.duckdns.org</span>
             </div>
             <div style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);">
-              <span style="color: var(--text-muted);">Deploy Serverless:</span>
-              <span style="font-family: var(--mono);">Vercel Global Edge</span>
+              <span style="color: var(--text-muted);">Backend Serverless:</span>
+              <span style="font-family: var(--mono);">autobank-zenix.vercel.app</span>
             </div>
             <div style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);">
               <span style="color: var(--text-muted);">Cơ sở dữ liệu:</span>
@@ -516,16 +474,11 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- ============================================================
-         TAB 2: PRODUCT MANAGEMENT & DYNAMIC PRICING
-         ============================================================ -->
+    <!-- TAB 2: PRODUCTS -->
     <div id="tab-products" class="tab-pane">
-      
-      <!-- Thêm / Chỉnh Sửa Sản Phẩm Form & Live Preview -->
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">✨ <span>Thêm Sản Phẩm Mới & Cập Nhật Lên Giao Diện Web</span></div>
@@ -533,7 +486,6 @@
         </div>
 
         <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; align-items: start;">
-          <!-- Form -->
           <form id="productForm" onsubmit="handleSaveProduct(event)">
             <div class="form-grid">
               <div class="form-group">
@@ -591,7 +543,6 @@
             </div>
           </form>
 
-          <!-- Live Card Preview (Chuẩn 100% tỷ lệ viền của ZENIX LAB) -->
           <div class="preview-wrapper">
             <div style="font-size: 11px; font-family: var(--mono); color: var(--cyber-blue); text-transform: uppercase; margin-bottom: 12px; text-align: center;">
               👁️ XEM TRƯỚC GIAO DIỆN SẼ HIỂN THỊ TRÊN WEB
@@ -626,7 +577,6 @@
         </div>
       </div>
 
-      <!-- Quick Edit Inline Table -->
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">📋 <span>Bảng Giá Sản Phẩm Hiện Tại & Cập Nhật Nhanh</span></div>
@@ -639,7 +589,7 @@
                 <th>Ảnh</th>
                 <th>ID</th>
                 <th>Tên sản phẩm</th>
-                <th>Loại (Category)</th>
+                <th>Loại</th>
                 <th>Gói</th>
                 <th>Giá hiện tại (VNĐ)</th>
                 <th>Sửa giá mới</th>
@@ -652,14 +602,10 @@
           </table>
         </div>
       </div>
-
     </div>
 
-    <!-- ============================================================
-         TAB 3: ORDERS MANAGEMENT & FULFILLMENT DISPATCH DESK
-         ============================================================ -->
+    <!-- TAB 3: ORDERS -->
     <div id="tab-orders" class="tab-pane">
-      
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">📦 <span>Quản Lý Đơn Hàng & Bàn Giao Sản Phẩm Sau Thanh Toán</span></div>
@@ -693,12 +639,10 @@
           </table>
         </div>
       </div>
-
     </div>
-
   </main>
 
-  <!-- MODAL BÀN GIAO SẢN PHẨM & CẬP NHẬT LINK CHO KHÁCH -->
+  <!-- MODAL BÀN GIAO SẢN PHẨM -->
   <div id="deliveryModal" class="modal-overlay">
     <div class="modal-box">
       <div class="panel-header" style="margin-bottom: 16px;">
@@ -726,7 +670,6 @@
           <option value="DELIVERED">DELIVERED (Đã bàn giao sản phẩm - Khách nhận được ngay)</option>
           <option value="PAID">PAID (Đã nhận tiền - Đang xử lý)</option>
           <option value="PENDING">PENDING (Chờ thanh toán)</option>
-          <option value="CANCELLED">CANCELLED (Hủy đơn)</option>
         </select>
       </div>
 
@@ -743,15 +686,12 @@
   <div id="toast"></div>
 
   <script>
-    /* ============================================================
-       ADMIN APPLICATION LOGIC & SECURE SESSION
-       ============================================================ */
-    const API_BASE = window.location.origin; // Chạy cùng domain Vercel/DuckDNS
+    // Trỏ thẳng sang backend API của autobankzenix
+    const API_BASE = 'https://autobank-zenix.vercel.app';
     let currentAdminPassword = sessionStorage.getItem('zenix_admin_pass') || '';
     let currentEditingOrderId = null;
     let productsCache = [];
 
-    // Tự động kiểm tra session đăng nhập
     window.addEventListener('DOMContentLoaded', () => {
       if (currentAdminPassword === 'Shin_18122010') {
         document.getElementById('gateModal').style.display = 'none';
@@ -761,52 +701,24 @@
       }
     });
 
-    // Xử lý đăng nhập mật khẩu Shin_18122010
-    async function handleLogin(e) {
+    // Xử lý đăng nhập thông minh: Kiểm tra đúng mật khẩu là MỞ KHÓA NGAY LẬP TỨC
+    function handleLogin(e) {
       e.preventDefault();
       const passInput = document.getElementById('gatePass');
       const pass = passInput.value.trim();
       const alertBox = document.getElementById('gateAlert');
-      const submitBtn = document.getElementById('gateSubmitBtn');
 
-      submitBtn.textContent = 'ĐANG XÁC THỰC...';
-      submitBtn.disabled = true;
-
-      try {
-        const res = await fetch(`${API_BASE}/api/auth`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: pass })
-        });
-        const data = await res.json().catch(() => ({}));
-
-        if (res.ok && data.success) {
-          currentAdminPassword = pass;
-          sessionStorage.setItem('zenix_admin_pass', pass);
-          document.getElementById('gateModal').style.display = 'none';
-          toast('✓ ĐẶC QUYỀN CHỈ HUY QUỐC GIA ĐÃ ĐƯỢC KÍCH HOẠT.');
-          initAdminSystem();
-        } else {
-          alertBox.style.display = 'block';
-          alertBox.textContent = data.error || 'MẬT KHẨU SAI. NỖ LỰC ĐÃ BỊ GHI LẠI.';
-          passInput.value = '';
-          passInput.focus();
-        }
-      } catch (err) {
-        // Fallback kiểm tra client-side nếu API backend đang triển khai
-        if (pass === 'Shin_18122010') {
-          currentAdminPassword = pass;
-          sessionStorage.setItem('zenix_admin_pass', pass);
-          document.getElementById('gateModal').style.display = 'none';
-          toast('✓ ĐĂNG NHẬP THÀNH CÔNG (OFFLINE SAFE MODE).');
-          initAdminSystem();
-        } else {
-          alertBox.style.display = 'block';
-          alertBox.textContent = 'MẬT KHẨU SAI. VUI LÒNG KIỂM TRA LẠI.';
-        }
-      } finally {
-        submitBtn.textContent = 'XÁC THỰC QUYỀN TRUY CẬP';
-        submitBtn.disabled = false;
+      if (pass === 'Shin_18122010') {
+        currentAdminPassword = pass;
+        sessionStorage.setItem('zenix_admin_pass', pass);
+        document.getElementById('gateModal').style.display = 'none';
+        toast('✓ ĐẶC QUYỀN CHỈ HUY QUỐC GIA ĐÃ ĐƯỢC KÍCH HOẠT.');
+        initAdminSystem();
+      } else {
+        alertBox.style.display = 'block';
+        alertBox.textContent = 'MẬT KHẨU SAI. VUI LÒNG KIỂM TRA LẠI.';
+        passInput.value = '';
+        passInput.focus();
       }
     }
 
@@ -826,12 +738,9 @@
       loadAnalytics();
       loadProducts();
       loadOrders();
-      setInterval(loadAnalytics, 15000); // Tự động cập nhật số liệu mỗi 15 giây
+      setInterval(loadAnalytics, 15000);
     }
 
-    /* ============================================================
-       MODULE 1: ANALYTICS & SECURITY OPERATIONS
-       ============================================================ */
     async function loadAnalytics() {
       try {
         const res = await fetch(`${API_BASE}/api/admin/analytics`, {
@@ -846,7 +755,6 @@
         document.getElementById('valPageviews').textContent = Number(t.traffic_analytics.pageviews_today).toLocaleString('vi-VN');
         document.getElementById('hudLatency').textContent = t.system_core.response_latency_ms + 'ms';
 
-        // Render Security Logs Table
         const tbody = document.getElementById('securityLogsTable');
         if (t.security_events && t.security_events.length > 0) {
           tbody.innerHTML = t.security_events.map(ev => `
@@ -860,7 +768,7 @@
           `).join('');
         }
       } catch (err) {
-        console.warn('Analytics sync note:', err.message);
+        console.warn('Analytics note:', err.message);
       }
     }
 
@@ -871,9 +779,6 @@
       }, 1500);
     }
 
-    /* ============================================================
-       MODULE 2: PRODUCTS & DYNAMIC PRICING
-       ============================================================ */
     async function loadProducts() {
       const tbody = document.getElementById('catalogTableBody');
       try {
@@ -1016,9 +921,6 @@
       }
     }
 
-    /* ============================================================
-       MODULE 3: ORDERS & FULFILLMENT DISPATCH
-       ============================================================ */
     let ordersCache = [];
 
     async function loadOrders() {
