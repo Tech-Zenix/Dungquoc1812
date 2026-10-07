@@ -296,15 +296,76 @@
     .od-label { color: var(--muted); }
     .od-val { font-weight: 700; color: var(--text-pure); }
 
-    /* VietQR Embedded Checkout */
-    .checkout-qr-card {
-      margin-top: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 18px; padding: 18px; text-align: center; max-width: 320px;
+    /* ============================================================
+       AUTOBANK ZENIX CHECKOUT CARD (Chuẩn Style repo AutobankZenix)
+       ============================================================ */
+    .autobank-card {
+      margin-top: 12px; width: 100%; max-width: 380px;
+      background: #ffffff; border-radius: 20px; overflow: hidden;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.45); color: #222222;
+      border: 1px solid rgba(255,255,255,0.2); animation: fadeInMsg 0.35s var(--ease-ios);
     }
-    .checkout-qr-img {
-      width: 200px; height: 200px; border-radius: 12px; background: #fff; padding: 6px;
-      margin: 10px auto; display: block; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    .autobank-notice {
+      background: linear-gradient(90deg, #f5a623 0%, #f7c05a 100%);
+      padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
     }
+    .autobank-notice-text { color: #ffffff; font-size: 13px; font-weight: 750; line-height: 1.35; flex: 1; }
+    .autobank-timer {
+      color: #b93426; font-size: 20px; font-weight: 900; font-variant-numeric: tabular-nums;
+      background: rgba(255,255,255,0.92); padding: 3px 10px; border-radius: 10px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.15); white-space: nowrap;
+    }
+    .autobank-qr-section {
+      padding: 18px 16px 14px; display: flex; flex-direction: column; align-items: center; background: #fff;
+    }
+    .autobank-qr-wrap {
+      width: 210px; height: 210px; padding: 6px; border: 1.5px solid #ececec; border-radius: 12px;
+      background: #fafafa; display: flex; align-items: center; justify-content: center;
+    }
+    .autobank-qr-img { width: 198px; height: 198px; border-radius: 8px; display: block; }
+    .autobank-amount { color: #e74c3c; font-size: 22px; font-weight: 900; margin-top: 12px; letter-spacing: -0.02em; }
+    .autobank-status-pill {
+      display: inline-flex; align-items: center; gap: 7px; margin-top: 8px;
+      padding: 6px 14px; background: #fff7e6; border: 1px solid #f5d28a; border-radius: 20px;
+      color: #b77900; font-size: 13px; font-weight: 800;
+    }
+    .autobank-status-pill.paid { background: #eafaf0; border-color: #9cddb4; color: #16803c; }
+    .autobank-status-pill.expired { background: #fff0f0; border-color: #efb0b0; color: #c0392b; }
+    .autobank-status-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 1.2s infinite;
+    }
+    .autobank-info-list { padding: 0 16px 14px; display: flex; flex-direction: column; gap: 8px; background: #fff; }
+    .autobank-info-item {
+      background: #fbfbfb; border: 1px solid #eeeeee; border-radius: 12px;
+      padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .autobank-info-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .autobank-info-icon { font-size: 18px; width: 22px; text-align: center; flex-shrink: 0; }
+    .autobank-info-meta { min-width: 0; }
+    .autobank-info-label { font-size: 11px; color: #888888; font-weight: 600; margin-bottom: 2px; }
+    .autobank-info-value { font-size: 14px; font-weight: 850; color: #222222; word-break: break-word; }
+    .autobank-info-value.highlight-code { color: #e67e22; font-family: monospace; font-size: 14.5px; }
+    .autobank-copy-btn {
+      background: #f5a623; color: #ffffff; border: none; border-radius: 18px;
+      padding: 5px 12px; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap;
+      transition: all 0.2s var(--ease-ios); box-shadow: 0 2px 6px rgba(245,166,35,0.3);
+    }
+    .autobank-copy-btn:hover { background: #e09419; transform: scale(1.04); }
+    .autobank-copy-btn:active { transform: scale(0.96); }
+    .autobank-note-box {
+      margin: 0 16px 14px; padding: 12px 14px; border-radius: 12px;
+      background: #fff8f0; border: 1px solid #fbe5cc; font-size: 12px; color: #666; line-height: 1.55;
+    }
+    .autobank-note-box strong { color: #d35400; }
+    .autobank-actions {
+      padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .autobank-check-btn {
+      width: 100%; padding: 11px; border-radius: 12px; border: none;
+      background: #16803c; color: #ffffff; font-size: 13.5px; font-weight: 850;
+      cursor: pointer; transition: all 0.2s var(--ease-ios); box-shadow: 0 3px 10px rgba(22,128,60,0.3);
+    }
+    .autobank-check-btn:hover { background: #126e33; transform: translateY(-1px); }
 
     /* Typing Loader */
     .typing-box {
@@ -530,9 +591,9 @@
     ];
 
     const BANK_INFO = {
-      bank: 'MB Bank (Quân Đội)',
-      accountNumber: '0339149068',
-      accountName: 'PHAN QUOC DUNG',
+      bank: 'MB Bank (Ngân hàng Quân đội)',
+      accountNumber: '118122010',
+      accountName: 'Phan Quoc Dung',
       zalo: '0339149068'
     };
 
@@ -831,33 +892,258 @@
       appendMsg('agent', `⚡ <strong>Dịch Vụ Dame, Tool & Tut Trick MMO:</strong>${cardsHtml}`, true);
     }
 
+    // ── Sinh mã thanh toán AutoBank chuẩn ZNX... theo repo AutobankZenix ──
+    function generatePaymentCode() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let random = "";
+      for (let i = 0; i < 8; i++) {
+        random += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return `ZNX${random}`;
+    }
+
+    // ── Render Card Thanh Toán AutoBank (Chuẩn giao diện repo AutobankZenix) ──
     function renderSingleProductCheckout(p) {
-      const qrContent = `ZENIX ${p.id.toUpperCase()}`;
-      const vietQrUrl = `https://img.vietqr.io/image/MB-${BANK_INFO.accountNumber}-compact2.png?amount=${p.amount}&addInfo=${encodeURIComponent(qrContent)}&accountName=${encodeURIComponent(BANK_INFO.accountName)}`;
+      const paymentCode = generatePaymentCode();
+      const uid = 'ab_' + Math.random().toString(36).substring(2, 9);
+      const vietQrUrl = `https://img.vietqr.io/image/MB-${BANK_INFO.accountNumber}-compact2.png?amount=${p.amount}&addInfo=${encodeURIComponent(paymentCode)}&accountName=${encodeURIComponent(BANK_INFO.accountName)}`;
 
       const html = `
-        <div class="checkout-qr-card">
-          <div style="font-weight:850;font-size:16px;color:#fff;">${p.name}</div>
-          <div style="font-size:12px;color:var(--cyber-green);margin-bottom:8px;">Gói: ${p.package}</div>
-          <div style="font-size:20px;font-weight:900;color:var(--cyber-blue);">${p.amount.toLocaleString('vi-VN')}₫</div>
-          <img src="${vietQrUrl}" class="checkout-qr-img" alt="VietQR Autobank">
-          <div style="font-size:12px;color:var(--muted);margin-top:6px;">Quét mã QR trên để chuyển khoản tự động duyệt 24/7</div>
-          <div style="font-size:11px;color:var(--cyber-amber);margin-top:4px;">Nội dung CK: <strong>${qrContent}</strong></div>
+        <div class="autobank-card" id="card_${uid}">
+          <!-- Notice thông báo đếm ngược 15 phút -->
+          <div class="autobank-notice">
+            <span class="autobank-notice-text">⏰ Đơn hàng hết hạn sau:</span>
+            <span class="autobank-timer" id="timer_${uid}">15:00</span>
+          </div>
+
+          <!-- Khu vực QR code -->
+          <div class="autobank-qr-section">
+            <div class="autobank-qr-wrap">
+              <img src="${vietQrUrl}" class="autobank-qr-img" alt="VietQR MB Bank ${BANK_INFO.accountNumber}">
+            </div>
+            <div class="autobank-amount">${p.amount.toLocaleString('vi-VN')}₫</div>
+            <div class="autobank-status-pill pending" id="status_pill_${uid}">
+              <span class="autobank-status-dot"></span> ⏳ Chờ thanh toán...
+            </div>
+          </div>
+
+          <!-- Danh sách thông tin chuyển khoản có nút Copy riêng -->
+          <div class="autobank-info-list">
+            <div class="autobank-info-item">
+              <div class="autobank-info-left">
+                <span class="autobank-info-icon">🏦</span>
+                <div class="autobank-info-meta">
+                  <div class="autobank-info-label">Ngân hàng</div>
+                  <div class="autobank-info-value">${BANK_INFO.bank}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="autobank-info-item">
+              <div class="autobank-info-left">
+                <span class="autobank-info-icon">👤</span>
+                <div class="autobank-info-meta">
+                  <div class="autobank-info-label">Chủ tài khoản</div>
+                  <div class="autobank-info-value">${BANK_INFO.accountName}</div>
+                </div>
+              </div>
+              <button class="autobank-copy-btn" onclick="copyAutoBankText('${BANK_INFO.accountName}', 'Tên chủ tài khoản')">Copy</button>
+            </div>
+
+            <div class="autobank-info-item">
+              <div class="autobank-info-left">
+                <span class="autobank-info-icon">🔢</span>
+                <div class="autobank-info-meta">
+                  <div class="autobank-info-label">Số tài khoản</div>
+                  <div class="autobank-info-value" style="color:var(--cyber-blue);font-weight:900;">${BANK_INFO.accountNumber}</div>
+                </div>
+              </div>
+              <button class="autobank-copy-btn" onclick="copyAutoBankText('${BANK_INFO.accountNumber}', 'Số tài khoản')">Copy</button>
+            </div>
+
+            <div class="autobank-info-item">
+              <div class="autobank-info-left">
+                <span class="autobank-info-icon">💰</span>
+                <div class="autobank-info-meta">
+                  <div class="autobank-info-label">Số tiền chuyển</div>
+                  <div class="autobank-info-value" style="color:#e74c3c;font-weight:900;">${p.amount.toLocaleString('vi-VN')}₫</div>
+                </div>
+              </div>
+              <button class="autobank-copy-btn" onclick="copyAutoBankText('${p.amount}', 'Số tiền')">Copy</button>
+            </div>
+
+            <div class="autobank-info-item">
+              <div class="autobank-info-left">
+                <span class="autobank-info-icon">📝</span>
+                <div class="autobank-info-meta">
+                  <div class="autobank-info-label">Nội dung chuyển khoản (Bắt buộc)</div>
+                  <div class="autobank-info-value highlight-code">${paymentCode}</div>
+                </div>
+              </div>
+              <button class="autobank-copy-btn" onclick="copyAutoBankText('${paymentCode}', 'Nội dung chuyển khoản')">Copy</button>
+            </div>
+          </div>
+
+          <!-- Lưu ý chuyển khoản -->
+          <div class="autobank-note-box">
+            📌 <strong>Lưu ý:</strong> Vui lòng điền <strong>chính xác nội dung chuyển khoản</strong> trên app ngân hàng để hệ thống tự động kích hoạt gói trong 1-3 phút.
+          </div>
+
+          <!-- Nút kiểm tra giao dịch -->
+          <div class="autobank-actions">
+            <button class="autobank-check-btn" id="btn_check_${uid}" onclick="manualCheckAutoBankPayment('${paymentCode}', '${uid}')">🔄 Tôi đã chuyển khoản — Kiểm tra ngay</button>
+          </div>
         </div>
       `;
-      appendMsg('agent', `Dưới đây là mã VietQR thanh toán tự động cho <strong>${p.name}</strong>:`, false);
+
+      appendMsg('agent', `Dưới đây là giao diện thanh toán tự động VietQR cho <strong>${p.name}</strong> (${p.package}):`, false);
       appendMsg('agent', html, true);
+
+      // Kích hoạt đồng hồ đếm ngược 15:00
+      initAutobankCountdown(uid, paymentCode);
+    }
+
+    // ── Đồng hồ đếm ngược 15 phút (900 giây) ──
+    function initAutobankCountdown(uid, code) {
+      let secondsLeft = 15 * 60;
+      const timerEl = document.getElementById(`timer_${uid}`);
+      const statusPill = document.getElementById(`status_pill_${uid}`);
+      if (!timerEl) return;
+
+      const intervalId = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+          clearInterval(intervalId);
+          if (timerEl) {
+            timerEl.innerText = '00:00';
+            timerEl.style.color = '#ff3b30';
+          }
+          if (statusPill) {
+            statusPill.className = 'autobank-status-pill expired';
+            statusPill.innerHTML = '<span class="autobank-status-dot"></span> ❌ Hết hạn thanh toán';
+          }
+          const checkBtn = document.getElementById(`btn_check_${uid}`);
+          if (checkBtn) {
+            checkBtn.disabled = true;
+            checkBtn.innerText = '❌ Đơn hàng đã quá hạn 15 phút';
+            checkBtn.style.background = '#888';
+          }
+          return;
+        }
+
+        const mins = Math.floor(secondsLeft / 60);
+        const secs = secondsLeft % 60;
+        if (timerEl) {
+          timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+          if (secondsLeft <= 180) {
+            timerEl.style.color = '#ff3b30'; // Cảnh báo đỏ khi còn dưới 3 phút
+          }
+        }
+      }, 1000);
+
+      // Tự động kiểm tra polling định kỳ mỗi 6 giây trong 15 phút
+      const pollId = setInterval(async () => {
+        if (secondsLeft <= 0) { clearInterval(pollId); return; }
+        const isPaid = await fetchCheckStatus(code);
+        if (isPaid) {
+          clearInterval(pollId);
+          clearInterval(intervalId);
+          triggerAutobankPaidSuccess(uid, code);
+        }
+      }, 6000);
+    }
+
+    // Kiểm tra API ngầm
+    async function fetchCheckStatus(code) {
+      for (const root of AUTOBANK_API_ROOTS) {
+        try {
+          const res = await fetch(`${root}/api/payment/${encodeURIComponent(code)}`, {
+            headers: { 'Accept': 'application/json' }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const st = (data.status || '').toString().toUpperCase();
+            if (st === 'PAID' || st === 'SUCCESS') return true;
+          }
+        } catch(e){}
+      }
+      return false;
+    }
+
+    // Bấm nút thủ công kiểm tra
+    async function manualCheckAutoBankPayment(code, uid) {
+      const btn = document.getElementById(`btn_check_${uid}`);
+      if (btn) {
+        btn.innerText = '⏳ Đang kiểm tra giao dịch MB Bank...';
+        btn.disabled = true;
+      }
+
+      showToast('Đang tra cứu sao kê AutoBank...', 'info');
+      const isPaid = await fetchCheckStatus(code);
+
+      if (isPaid) {
+        triggerAutobankPaidSuccess(uid, code);
+        showToast('Thanh toán thành công!', 'success');
+      } else {
+        showToast('Chưa nhận được giao dịch. Vui lòng đợi 1-2 phút!', 'warning');
+        if (btn) {
+          btn.innerText = '🔄 Tôi đã chuyển khoản — Kiểm tra lại';
+          btn.disabled = false;
+        }
+      }
+    }
+
+    // Khi thanh toán thành công
+    function triggerAutobankPaidSuccess(uid, code) {
+      const statusPill = document.getElementById(`status_pill_${uid}`);
+      if (statusPill) {
+        statusPill.className = 'autobank-status-pill paid';
+        statusPill.innerHTML = '✅ ĐÃ THANH TOÁN THÀNH CÔNG';
+      }
+      const timerEl = document.getElementById(`timer_${uid}`);
+      if (timerEl) {
+        timerEl.innerText = 'ĐÃ DUYỆT';
+        timerEl.style.color = '#16803c';
+      }
+      const checkBtn = document.getElementById(`btn_check_${uid}`);
+      if (checkBtn) {
+        checkBtn.style.background = '#16803c';
+        checkBtn.innerHTML = '🎉 XÁC NHẬN THÀNH CÔNG — CẢM ƠN BẠN!';
+        checkBtn.disabled = true;
+      }
+      appendMsg('agent', `🎉 Chúc mừng bạn! Đơn hàng <code>${code}</code> đã được hệ thống <strong>AutoBank duyệt thành công</strong>!<br><br>Vui lòng kiểm tra link nhận hàng hoặc liên hệ Admin Zalo <strong>${BANK_INFO.zalo}</strong> để được kích hoạt ngay.`);
+    }
+
+    function copyAutoBankText(text, label) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(`Đã copy ${label}: ${text}`, 'success');
+      }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast(`Đã copy ${label}`, 'success');
+      });
     }
 
     function renderBankInformation() {
       const html = `
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:16px;margin-top:8px;">
-          <div style="font-weight:bold;margin-bottom:8px;color:#fff;">🏦 THÔNG TIN NGÂN HÀNG MB BANK:</div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0;"><span style="color:var(--muted)">Ngân hàng:</span><strong>${BANK_INFO.bank}</strong></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0;"><span style="color:var(--muted)">Số tài khoản:</span><strong style="color:var(--cyber-blue);">${BANK_INFO.accountNumber}</strong></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0;"><span style="color:var(--muted)">Chủ tài khoản:</span><strong>${BANK_INFO.accountName}</strong></div>
-          <div style="margin-top:10px;text-align:center;">
-            <button onclick="navigator.clipboard.writeText('${BANK_INFO.accountNumber}');showToast('Đã copy STK!','success')" style="padding:7px 16px;border-radius:20px;border:1px solid var(--cyber-blue);background:rgba(0,240,255,0.1);color:var(--cyber-blue);cursor:pointer;font-weight:bold;">📋 Copy Số Tài Khoản</button>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:18px;padding:18px;margin-top:8px;">
+          <div style="font-weight:900;font-size:15px;margin-bottom:12px;color:var(--text-pure);display:flex;align-items:center;gap:8px;">
+            🏦 THÔNG TIN NGÂN HÀNG AUTOBANK ZENIX:
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+            <span style="color:var(--muted)">Ngân hàng:</span><strong>${BANK_INFO.bank}</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+            <span style="color:var(--muted)">Số tài khoản:</span><strong style="color:var(--cyber-blue);font-size:16px;">${BANK_INFO.accountNumber}</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+            <span style="color:var(--muted)">Chủ tài khoản:</span><strong>${BANK_INFO.accountName}</strong>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:10px;">
+            <button onclick="copyAutoBankText('${BANK_INFO.accountNumber}', 'Số tài khoản')" style="flex:1;padding:9px;border-radius:12px;border:1px solid var(--cyber-blue);background:rgba(0,240,255,0.12);color:var(--cyber-blue);cursor:pointer;font-weight:800;">📋 Copy STK 118122010</button>
+            <button onclick="copyAutoBankText('${BANK_INFO.accountName}', 'Chủ tài khoản')" style="flex:1;padding:9px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-weight:800;">📋 Copy Tên</button>
           </div>
         </div>
       `;
