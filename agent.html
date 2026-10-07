@@ -247,18 +247,50 @@
 
     /* Order Result Card */
     .order-status-card {
-      margin-top: 10px; border-radius: 16px; border: 1px solid rgba(0,240,255,0.25);
-      background: linear-gradient(165deg, rgba(10,12,20,0.9) 0%, rgba(5,6,12,0.95) 100%);
-      padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      margin-top: 10px; border-radius: 18px; border: 1px solid rgba(0,240,255,0.25);
+      background: linear-gradient(165deg, rgba(10,12,20,0.95) 0%, rgba(5,6,12,0.98) 100%);
+      padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: all 0.3s var(--ease-ios);
     }
-    .order-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .order-status-card.paid { border-color: rgba(0,255,102,0.35); box-shadow: 0 10px 35px rgba(0,255,102,0.1); }
+    .order-status-card.pending { border-color: rgba(255,170,0,0.35); box-shadow: 0 10px 35px rgba(255,170,0,0.1); }
+    .order-status-card.expired { border-color: rgba(255,59,48,0.35); box-shadow: 0 10px 35px rgba(255,59,48,0.1); }
+
+    .order-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
     .order-code-badge { font-family: monospace; font-size: 13px; font-weight: 800; color: var(--cyber-blue); }
+    
+    /* Huy hiệu trạng thái xung quanh chữ */
     .status-pill {
-      font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: var(--radius-pill); text-transform: uppercase;
+      font-size: 11.5px; font-weight: 900; padding: 5px 14px; border-radius: var(--radius-pill);
+      text-transform: uppercase; letter-spacing: 0.06em; display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.3s var(--ease-ios);
     }
-    .status-pill.paid { background: rgba(0,255,102,0.12); color: var(--cyber-green); border: 1px solid rgba(0,255,102,0.3); }
-    .status-pill.pending { background: rgba(255,170,0,0.12); color: var(--cyber-amber); border: 1px solid rgba(255,170,0,0.3); }
-    .status-pill.expired { background: rgba(255,59,48,0.12); color: var(--cyber-red); border: 1px solid rgba(255,59,48,0.3); }
+    /* PAID: Phần xung quanh là màu xanh lá sáng + viền xanh */
+    .status-pill.paid {
+      background: rgba(0, 255, 102, 0.16);
+      color: #00ff66;
+      border: 1.5px solid #00ff66;
+      box-shadow: 0 0 16px rgba(0, 255, 102, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    }
+    /* PENDING: Đang trong 15 phút, xung quanh là màu vàng hổ phách */
+    .status-pill.pending {
+      background: rgba(255, 170, 0, 0.16);
+      color: #ffaa00;
+      border: 1.5px solid #ffaa00;
+      box-shadow: 0 0 16px rgba(255, 170, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+      animation: pulsePendingBadge 2s infinite ease-in-out;
+    }
+    /* EXPIRED: Quá hạn, xung quanh là màu đỏ */
+    .status-pill.expired {
+      background: rgba(255, 59, 48, 0.16);
+      color: #ff3b30;
+      border: 1.5px solid #ff3b30;
+      box-shadow: 0 0 16px rgba(255, 59, 48, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    }
+    @keyframes pulsePendingBadge {
+      0%, 100% { box-shadow: 0 0 12px rgba(255, 170, 0, 0.35); }
+      50% { box-shadow: 0 0 24px rgba(255, 170, 0, 0.65); transform: scale(1.02); }
+    }
     .order-detail-line { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
     .order-detail-line:last-child { border-bottom: 0; }
     .od-label { color: var(--muted); }
@@ -646,26 +678,97 @@
       }
 
       if (orderData && (orderData.status || orderData.id)) {
-        const isPaid = orderData.status === 'paid';
-        const isPending = orderData.status === 'pending';
-        const pillClass = isPaid ? 'paid' : (isPending ? 'pending' : 'expired');
-        const statusLabel = isPaid ? '✅ Đã thanh toán thành công' : (isPending ? '⏳ Đang chờ chuyển khoản' : '❌ Hết hạn / Đã hủy');
+        // Chuẩn hóa status gốc từ API (hoa/thường đều nhận diện chuẩn)
+        const rawStatus = (orderData.status || '').toString().trim().toUpperCase();
+
+        let finalStatus = 'PENDING';
+        let remainingMinsText = '';
+
+        // 1. Kiểm tra nếu đơn hàng đã thanh toán thành công (PAID)
+        if (rawStatus === 'PAID' || rawStatus === 'SUCCESS' || rawStatus === 'COMPLETED') {
+          finalStatus = 'PAID';
+        } else {
+          // 2. Tính toán khoảng thời gian 15 phút (15 mins = 900,000 ms)
+          const FIFTEEN_MINS_MS = 15 * 60 * 1000;
+          let isWithin15Mins = true;
+
+          // Nếu có expires_at (thời điểm hết hạn)
+          if (orderData.expires_at) {
+            const expireTimestamp = new Date(orderData.expires_at).getTime();
+            if (!isNaN(expireTimestamp)) {
+              const diffMs = expireTimestamp - Date.now();
+              isWithin15Mins = diffMs > 0;
+              if (isWithin15Mins) {
+                const minsLeft = Math.max(1, Math.ceil(diffMs / 60000));
+                remainingMinsText = ` (Còn ~${minsLeft} phút)`;
+              }
+            }
+          } 
+          // Nếu có created_at (thời điểm tạo đơn)
+          else if (orderData.created_at) {
+            const createTimestamp = new Date(orderData.created_at).getTime();
+            if (!isNaN(createTimestamp)) {
+              const elapsedMs = Date.now() - createTimestamp;
+              isWithin15Mins = elapsedMs < FIFTEEN_MINS_MS;
+              if (isWithin15Mins) {
+                const minsLeft = Math.max(1, Math.ceil((FIFTEEN_MINS_MS - elapsedMs) / 60000));
+                remainingMinsText = ` (Còn ~${minsLeft} phút)`;
+              }
+            }
+          }
+
+          // Quyết định: Nếu API trả rõ EXPIRED, hoặc đã quá 15 phút -> EXPIRED
+          if (rawStatus === 'EXPIRED' || rawStatus === 'CANCELLED' || !isWithin15Mins) {
+            finalStatus = 'EXPIRED';
+          } else {
+            // Còn trong khoảng 15 phút -> PENDING màu vàng
+            finalStatus = 'PENDING';
+          }
+        }
+
+        // Định dạng màu sắc, huy hiệu và nhãn theo yêu cầu:
+        // PAID: Phần xung quanh là màu xanh lá (#00ff66)
+        // PENDING (trong 15p): Phần xung quanh là màu vàng (#ffaa00)
+        // EXPIRED (quá 15p): Phần xung quanh là màu đỏ (#ff3b30)
+        let pillClass = '';
+        let pillText = '';
+        let statusLabel = '';
+        let statusColor = '';
+
+        if (finalStatus === 'PAID') {
+          pillClass = 'paid';
+          pillText = 'PAID';
+          statusLabel = '✅ Đã thanh toán thành công';
+          statusColor = '#00ff66';
+        } else if (finalStatus === 'PENDING') {
+          pillClass = 'pending';
+          pillText = 'PENDING';
+          statusLabel = `⏳ Đang chờ thanh toán${remainingMinsText}`;
+          statusColor = '#ffaa00';
+        } else {
+          pillClass = 'expired';
+          pillText = 'EXPIRED';
+          statusLabel = '❌ Đã hết hạn (Quá 15 phút) / Đã hủy';
+          statusColor = '#ff3b30';
+        }
 
         const html = `
-          <div class="order-status-card">
+          <div class="order-status-card ${pillClass}">
             <div class="order-header-row">
               <span class="order-code-badge">MÃ ĐƠN: #${orderData.payment_code || orderData.id || code}</span>
-              <span class="status-pill ${pillClass}">${orderData.status || 'STATUS'}</span>
+              <span class="status-pill ${pillClass}">${pillText}</span>
             </div>
             <div class="order-detail-line"><span class="od-label">Sản phẩm:</span><span class="od-val">${orderData.product_name || orderData.product_id || 'N/A'}</span></div>
-            <div class="order-detail-line"><span class="od-label">Số tiền:</span><span class="od-val" style="color:var(--cyber-blue);">${(orderData.amount || 0).toLocaleString('vi-VN')}₫</span></div>
-            <div class="order-detail-line"><span class="od-label">Trạng thái:</span><span class="od-val">${statusLabel}</span></div>
+            <div class="order-detail-line"><span class="od-label">Số tiền:</span><span class="od-val" style="color:var(--cyber-blue);font-weight:900;">${(orderData.amount || 0).toLocaleString('vi-VN')}₫</span></div>
+            <div class="order-detail-line"><span class="od-label">Trạng thái:</span><span class="od-val" style="color:${statusColor};font-weight:800;">${statusLabel}</span></div>
             <div class="order-detail-line"><span class="od-label">Gói:</span><span class="od-val">${orderData.package || 'Tiêu chuẩn'}</span></div>
-            ${orderData.delivery_link ? `<div style="margin-top:10px;"><a href="${orderData.delivery_link}" target="_blank" style="display:block;padding:8px;background:var(--cyber-green);color:#000;text-align:center;border-radius:8px;font-weight:bold;">🚀 BẤM VÀO ĐÂY ĐỂ NHẬN HÀNG NGAY</a></div>` : ''}
+            ${orderData.delivery_link ? `<div style="margin-top:12px;"><a href="${orderData.delivery_link}" target="_blank" style="display:block;padding:10px;background:var(--cyber-green);color:#000;text-align:center;border-radius:10px;font-weight:900;text-decoration:none;box-shadow:0 0 15px rgba(0,255,102,0.4);">🚀 BẤM VÀO ĐÂY ĐỂ NHẬN HÀNG NGAY</a></div>` : ''}
+            ${finalStatus === 'PENDING' ? `<div style="margin-top:10px;font-size:12px;color:var(--cyber-amber);background:rgba(255,170,0,0.08);border:1px solid rgba(255,170,0,0.25);border-radius:10px;padding:8px 12px;text-align:center;">💡 Đơn hàng đang có hiệu lực trong 15 phút. Vui lòng chuyển khoản đúng số tiền để hệ thống tự động kích hoạt.</div>` : ''}
+            ${finalStatus === 'EXPIRED' ? `<div style="margin-top:10px;font-size:12px;color:var(--muted);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 12px;text-align:center;">Đơn đã quá hạn 15 phút. Bạn có thể tạo đơn mới hoặc nhắn Zalo <strong>${BANK_INFO.zalo}</strong> để hỗ trợ.</div>` : ''}
           </div>
         `;
         appendMsg('agent', html, true);
-        showToast('Tra cứu thành công!', 'success');
+        showToast(`Tra cứu thành công: ${pillText}`, pillClass === 'paid' ? 'success' : (pillClass === 'pending' ? 'info' : 'warning'));
       } else {
         appendMsg('agent', `⚠️ Không tìm thấy đơn hàng với mã <code>${code}</code> trên hệ thống AutobankZenix.<br><br>
         Có thể do:<br>
