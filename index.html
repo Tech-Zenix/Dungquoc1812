@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+Ae<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
@@ -2640,52 +2640,104 @@
 
 <script>
 /* ============================================================
-   TỰ ĐỘNG ĐỒNG BỘ GIÁ TỪ NEON DB LÊN TOÀN BỘ GIAO DIỆN
+   TỰ ĐỘNG ĐỒNG BỘ GIÁ & HIỂN THỊ SẢN PHẨM MỚI TỪ DATABASE
    ============================================================ */
 async function syncLivePrices() {
+  const API_ENDPOINT = 'https://autobank-zenix.vercel.app/api/products';
   try {
-    // Thêm timestamp ?_t= để đảm bảo luôn lấy giá mới nhất, không bị lưu cache
-    const res = await fetch(`${PAYMENT_API}/api/products?_t=${Date.now()}`, {
-      cache: 'no-store'
-    });
+    const res = await fetch(`${API_ENDPOINT}?_t=${Date.now()}`, { cache: 'no-store' });
     const data = await res.json().catch(() => ({}));
-    if (!data.success || !data.products) return;
+    if (!data.success || !Array.isArray(data.products)) return;
+
+    const grid = document.getElementById('productGrid') || document.querySelector('.catalog-grid');
+    if (!grid) return;
 
     data.products.forEach(p => {
-      // 1. Cập nhật vào danh mục thanh toán
-      if (PRODUCT_CATALOG[p.id]) {
-        PRODUCT_CATALOG[p.id].amount = Number(p.amount);
-        if (p.package) PRODUCT_CATALOG[p.id].package = p.package;
+      const prodId = String(p.id).trim().toLowerCase();
+      const amountNum = Number(p.amount) || 0;
+      const pkgText = p.package || 'Vĩnh viễn';
+
+      // 1. Cập nhật catalog bộ nhớ để nút Mua ngay lấy đúng giá
+      if (typeof PRODUCT_CATALOG !== 'undefined') {
+        PRODUCT_CATALOG[prodId] = {
+          name: p.name,
+          amount: amountNum,
+          package: pkgText
+        };
       }
 
-      // 2. Tìm tất cả các nút mua của sản phẩm này (trang chủ & kho sản phẩm)
-      const buyBtns = document.querySelectorAll(`button[onclick*="'${p.id}'"]`);
-      buyBtns.forEach(btn => {
-        const card = btn.closest('.product');
+      // 2. Kiểm tra xem thẻ sản phẩm này đã có trên giao diện chưa
+      const existingBtn = document.querySelector(`button[onclick*="'${prodId}'"]`);
+
+      if (existingBtn) {
+        // Cập nhật giá và thời hạn cho sản phẩm đã có sẵn
+        const card = existingBtn.closest('.product');
         if (card) {
-          // Cập nhật giá bán mới
           const priceEl = card.querySelector('.price');
-          if (priceEl) {
-            priceEl.textContent = `${Number(p.amount).toLocaleString('vi-VN')}đ/${p.package || 'Vĩnh viễn'}`;
-          }
-          // Cập nhật giá niêm yết cũ (nếu có)
-          const oldPriceEl = card.querySelector('.old');
-          if (oldPriceEl && p.old_amount) {
-            oldPriceEl.textContent = `${Number(p.old_amount).toLocaleString('vi-VN')}đ/${p.package || 'Vĩnh viễn'}`;
+          if (priceEl) priceEl.textContent = `${amountNum.toLocaleString('vi-VN')}đ/${pkgText}`;
+          const oldEl = card.querySelector('.old');
+          if (oldEl && p.old_amount) {
+            oldEl.textContent = `${Number(p.old_amount).toLocaleString('vi-VN')}đ/${pkgText}`;
           }
         }
-      });
+      } else {
+        // TỰ ĐỘNG TẠO THẺ MỚI 100% ĐÚNG CHUẨN GIAO DIỆN ZENIX LAB
+        const newCard = document.createElement('article');
+        newCard.className = 'product';
+        newCard.dataset.category = p.category || 'Ứng dụng';
+        newCard.dataset.search = `${p.name} ${p.category || ''} ${p.description || ''}`.toLowerCase();
+        
+        newCard.innerHTML = `
+          <div class="product-top">
+            <div class="product-image">
+              <img src="${p.image_url || 'https://placehold.co/128x128/1c1c24/00f0ff?text=ZENIX'}" alt="${p.name}" loading="lazy" onerror="this.src='https://placehold.co/128x128/1c1c24/00f0ff?text=ZENIX'">
+            </div>
+            <div>
+              <div class="product-meta-row">
+                <span class="tag">${p.category || 'Ứng dụng'}</span>
+                <div class="stock-indicator">
+                  <span class="stock-dot"></span>
+                  <span>${p.badge || 'TỰ ĐỘNG'}</span>
+                </div>
+              </div>
+              <h3>${p.name}</h3>
+              <p>${p.description || 'Sản phẩm kích hoạt bản quyền tự động, bảo hành uy tín.'}</p>
+            </div>
+          </div>
+          <div class="price-row">
+            <div class="price-group">
+              <span class="price">${amountNum.toLocaleString('vi-VN')}đ/${pkgText}</span>
+              ${p.old_amount ? `<span class="old">${Number(p.old_amount).toLocaleString('vi-VN')}đ/${pkgText}</span>` : ''}
+            </div>
+            <button class="buy" type="button" onclick="buy('${prodId}')" aria-label="Mua gói ${p.name}">
+              🛒 Mua ngay
+            </button>
+          </div>
+          <div class="rating-row">
+            <span class="rating">${p.rating || '★ 5.0 (99+)'}</span>
+            <span class="stock">${p.stock_status || 'Còn hàng'}</span>
+          </div>
+        `;
+        grid.appendChild(newCard);
+      }
     });
-    console.log('✓ ZENIX LAB: Đồng bộ bảng giá Neon DB thành công.');
+
+    // Cập nhật lại số lượng sản phẩm trên thanh tìm kiếm
+    const countBadge = document.getElementById('catalogCount');
+    if (countBadge) {
+      countBadge.textContent = grid.querySelectorAll('.product').length;
+    }
   } catch (err) {
-    console.warn('Lỗi đồng bộ giá:', err);
+    console.warn('Lỗi đồng bộ sản phẩm:', err);
   }
 }
 
-// Tự động kích hoạt ngay khi trang web tải xong
-window.addEventListener('DOMContentLoaded', () => {
+// Tự động gọi đồng bộ ngay khi trang load xong
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', syncLivePrices);
+} else {
   syncLivePrices();
-});
+}
 
 /* ============================================================
    ZENIX LAB PAYMENT CONFIGURATION & CATALOG (ALL 13 PRODUCTS)
